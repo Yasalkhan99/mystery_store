@@ -18,6 +18,8 @@ export default function BannersPage() {
   const [extractedUrl, setExtractedUrl] = useState<string | null>(null);
   const [layoutPosition, setLayoutPosition] = useState<number | null>(null);
   const [fileInputKey, setFileInputKey] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
   const fetchBanners = async () => {
     setLoading(true);
@@ -33,46 +35,88 @@ export default function BannersPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setCreating(true);
     
-    // Check if layout position is already taken
-    if (layoutPosition !== null) {
-      const bannersAtPosition = banners.filter(
-        b => b.id && b.layoutPosition === layoutPosition
-      );
-      if (bannersAtPosition.length > 0) {
-        if (!confirm(`Layout ${layoutPosition} is already assigned to "${bannersAtPosition[0].title}". Replace it?`)) {
+    try {
+      // Check if layout position is already taken
+      if (layoutPosition !== null) {
+        const bannersAtPosition = banners.filter(
+          b => b.id && b.layoutPosition === layoutPosition
+        );
+        if (bannersAtPosition.length > 0) {
+          if (!confirm(`Layout ${layoutPosition} is already assigned to "${bannersAtPosition[0].title}". Replace it?`)) {
+            setCreating(false);
+            return;
+          }
+          // Clear position from other banner
+          const { updateBanner } = await import('@/lib/services/bannerService');
+          await updateBanner(bannersAtPosition[0].id!, { layoutPosition: null });
+        }
+      }
+      
+      if (uploadMethod === 'file') {
+        if (!imageFile) {
+          setError('Please select an image file');
+          setCreating(false);
           return;
         }
-        // Clear position from other banner
-        const { updateBanner } = await import('@/lib/services/bannerService');
-        await updateBanner(bannersAtPosition[0].id!, { layoutPosition: null });
+        const result = await createBanner(title, imageFile, layoutPosition);
+        if (result.success) {
+          fetchBanners();
+          setShowForm(false);
+          setTitle('');
+          setImageFile(null);
+          setImagePreview(null);
+          setLayoutPosition(null);
+          setFileInputKey(prev => prev + 1);
+          setError(null);
+        } else {
+          const errorMsg = result.error?.message || result.error || 'Failed to create banner';
+          setError(errorMsg);
+          console.error('Banner creation failed:', result.error);
+        }
+      } else {
+        if (!imageUrl.trim()) {
+          setError('Please enter an image URL');
+          setCreating(false);
+          return;
+        }
+        
+        // Use extracted URL if available, otherwise use original
+        const finalUrl = extractedUrl && extractedUrl !== imageUrl ? extractedUrl : imageUrl;
+        
+        console.log('Creating banner from URL:', { title, imageUrl: finalUrl, layoutPosition });
+        
+        const result = await createBannerFromUrl(title, finalUrl, layoutPosition);
+        
+        console.log('Banner creation result:', result);
+        
+        if (result.success) {
+          await fetchBanners();
+          setShowForm(false);
+          setTitle('');
+          setImageUrl('');
+          setExtractedUrl(null);
+          setLayoutPosition(null);
+          setFileInputKey(prev => prev + 1);
+          setError(null);
+          alert('Banner created successfully!');
+        } else {
+          const errorMsg = typeof result.error === 'string' 
+            ? result.error 
+            : result.error?.message || JSON.stringify(result.error) || 'Failed to create banner';
+          setError(errorMsg);
+          console.error('Banner creation failed:', result.error);
+          alert(`Error: ${errorMsg}`);
+        }
       }
-    }
-    
-    if (uploadMethod === 'file') {
-      if (!imageFile) return;
-      const result = await createBanner(title, imageFile, layoutPosition);
-      if (result.success) {
-        fetchBanners();
-        setShowForm(false);
-        setTitle('');
-        setImageFile(null);
-        setImagePreview(null);
-        setLayoutPosition(null);
-        setFileInputKey(prev => prev + 1);
-      }
-    } else {
-      if (!imageUrl.trim()) return;
-      const result = await createBannerFromUrl(title, imageUrl, layoutPosition);
-      if (result.success) {
-        fetchBanners();
-        setShowForm(false);
-        setTitle('');
-        setImageUrl('');
-        setExtractedUrl(null);
-        setLayoutPosition(null);
-        setFileInputKey(prev => prev + 1);
-      }
+    } catch (err: any) {
+      const errorMsg = err?.message || 'An unexpected error occurred';
+      setError(errorMsg);
+      console.error('Banner creation error:', err);
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -181,6 +225,11 @@ export default function BannersPage() {
             {editingBanner ? 'Edit Banner' : 'Create New Banner'}
           </h2>
           <form onSubmit={editingBanner ? handleUpdate : handleCreate} className="space-y-4">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <strong>Error:</strong> {error}
+              </div>
+            )}
             <div>
               <label htmlFor="title" className="block text-gray-700 text-sm font-semibold mb-2">Title</label>
               <input
@@ -351,9 +400,10 @@ export default function BannersPage() {
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-semibold"
+                disabled={creating}
+                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {editingBanner ? 'Update Banner' : 'Create Banner'}
+                {creating ? 'Creating...' : editingBanner ? 'Update Banner' : 'Create Banner'}
               </button>
               {editingBanner && (
                 <button

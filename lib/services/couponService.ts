@@ -27,9 +27,8 @@ export interface Coupon {
   updatedAt?: string
 }
 
-const supabase = createClient()
-
 export async function createCoupon(coupon: Omit<Coupon, 'id'>, logoFile?: File) {
+  const supabase = createClient()
   try {
     let logoUrl: string | undefined
     if (logoFile) {
@@ -119,6 +118,7 @@ export async function createCoupon(coupon: Omit<Coupon, 'id'>, logoFile?: File) 
 
 export async function getCoupons(): Promise<Coupon[]> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -162,6 +162,7 @@ export async function getCoupons(): Promise<Coupon[]> {
 
 export async function getActiveCoupons(): Promise<Coupon[]> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -206,6 +207,7 @@ export async function getActiveCoupons(): Promise<Coupon[]> {
 
 export async function getCouponById(id: string): Promise<Coupon | null> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -250,6 +252,7 @@ export async function getCouponById(id: string): Promise<Coupon | null> {
 
 export async function updateCoupon(id: string, updates: Partial<Coupon>) {
   try {
+    const supabase = createClient()
     const updateData: any = {
       updated_at: new Date().toISOString(),
     }
@@ -294,6 +297,7 @@ export async function updateCoupon(id: string, updates: Partial<Coupon>) {
 
 export async function deleteCoupon(id: string) {
   try {
+    const supabase = createClient()
     const { error } = await supabase
       .from('coupons')
       .delete()
@@ -313,6 +317,7 @@ export async function deleteCoupon(id: string) {
 
 export async function getCouponsByCategoryId(categoryId: string): Promise<Coupon[]> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -358,6 +363,7 @@ export async function getCouponsByCategoryId(categoryId: string): Promise<Coupon
 
 export async function getCouponsByStoreName(storeName: string): Promise<Coupon[]> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -403,6 +409,7 @@ export async function getCouponsByStoreName(storeName: string): Promise<Coupon[]
 
 export async function getCouponsByStoreId(storeId: string): Promise<Coupon[]> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -448,6 +455,7 @@ export async function getCouponsByStoreId(storeId: string): Promise<Coupon[]> {
 
 export async function applyCoupon(code: string) {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -551,6 +559,7 @@ export async function createCouponFromUrl(coupon: Omit<Coupon, 'id'>, logoUrl?: 
       logoUrl: finalLogoUrl,
     })
 
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .insert(couponData)
@@ -572,6 +581,7 @@ export async function createCouponFromUrl(coupon: Omit<Coupon, 'id'>, logoUrl?: 
 
 export async function getPopularCoupons(): Promise<(Coupon | null)[]> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -626,6 +636,14 @@ export async function getPopularCoupons(): Promise<(Coupon | null)[]> {
 
 export async function getLatestCoupons(): Promise<(Coupon | null)[]> {
   try {
+    const supabase = createClient()
+    
+    // Check if Supabase is properly initialized
+    if (!supabase) {
+      console.error('Error: Supabase client not initialized')
+      return Array(8).fill(null)
+    }
+
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
@@ -636,7 +654,12 @@ export async function getLatestCoupons(): Promise<(Coupon | null)[]> {
       .limit(8)
 
     if (error) {
-      console.error('Error getting latest coupons:', error)
+      console.error('Error getting latest coupons:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
       return Array(8).fill(null)
     }
 

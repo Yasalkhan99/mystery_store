@@ -8,8 +8,6 @@ export interface Banner {
   createdAt?: string
 }
 
-const supabase = createClient()
-
 export async function createBanner(title: string, imageFile: File, layoutPosition?: number | null) {
   try {
     // Convert file to base64 and POST to server API for upload
@@ -55,6 +53,7 @@ export async function createBanner(title: string, imageFile: File, layoutPositio
 
 export async function getBanners(): Promise<Banner[]> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('banners')
       .select('*')
@@ -81,33 +80,42 @@ export async function getBanners(): Promise<Banner[]> {
 
 export async function getBannersWithLayout(): Promise<(Banner | null)[]> {
   try {
+    const supabase = createClient()
+    
+    // Get all active banners with layout positions 1-4
     const { data, error } = await supabase
       .from('banners')
       .select('*')
       .eq('active', true)
       .eq('position', 'home')
       .not('order_index', 'is', null)
+      .gte('order_index', 1)
+      .lte('order_index', 4)
       .order('order_index', { ascending: true })
-      .limit(4)
 
     if (error) {
       console.error('Error getting banners with layout:', error)
       return Array(4).fill(null)
     }
 
+    console.log('Banners fetched from database:', data)
+
     const layoutSlots: (Banner | null)[] = Array(4).fill(null)
     ;(data || []).forEach((item: any) => {
       if (item.order_index >= 1 && item.order_index <= 4) {
-        layoutSlots[item.order_index - 1] = {
+        const banner: Banner = {
           id: item.id,
           title: item.title || '',
           imageUrl: item.image_url,
           layoutPosition: item.order_index,
           createdAt: item.created_at,
         }
+        console.log(`Setting banner at position ${item.order_index}:`, banner)
+        layoutSlots[item.order_index - 1] = banner
       }
     })
 
+    console.log('Final layout slots:', layoutSlots)
     return layoutSlots
   } catch (error) {
     console.error('Error getting banners with layout:', error)
@@ -117,24 +125,53 @@ export async function getBannersWithLayout(): Promise<(Banner | null)[]> {
 
 export async function getBannerByLayoutPosition(position: number): Promise<Banner | null> {
   try {
+    const supabase = createClient()
+    
+    if (!supabase) {
+      console.error('Error: Supabase client not initialized')
+      return null
+    }
+
+    console.log(`Fetching banner at position ${position}...`)
+
     const { data, error } = await supabase
       .from('banners')
       .select('*')
       .eq('active', true)
       .eq('order_index', position)
-      .single()
+      .maybeSingle()
 
-    if (error || !data) {
+    if (error) {
+      console.error(`Error getting banner at position ${position}:`, {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
+      
+      // Check for RLS policy error
+      if (error.code === '42501' || error.message?.includes('permission') || error.message?.includes('policy')) {
+        console.error('RLS Policy Error: Please check Supabase RLS policies for banners table')
+      }
+      
       return null
     }
 
-    return {
+    if (!data) {
+      console.log(`No banner found at position ${position}`)
+      return null
+    }
+
+    const banner: Banner = {
       id: data.id,
       title: data.title || '',
       imageUrl: data.image_url,
       layoutPosition: data.order_index,
       createdAt: data.created_at,
     }
+
+    console.log(`✅ Banner found at position ${position}:`, banner)
+    return banner
   } catch (error) {
     console.error('Error getting banner by layout position:', error)
     return null
@@ -143,6 +180,7 @@ export async function getBannerByLayoutPosition(position: number): Promise<Banne
 
 export async function deleteBanner(id: string) {
   try {
+    const supabase = createClient()
     const { error } = await supabase
       .from('banners')
       .delete()
@@ -162,32 +200,77 @@ export async function deleteBanner(id: string) {
 
 export async function createBannerFromUrl(title: string, imageUrl: string, layoutPosition?: number | null) {
   try {
+    console.log('createBannerFromUrl called with:', { title, imageUrl, layoutPosition })
+    
+    const supabase = createClient()
+    
+    if (!supabase) {
+      console.error('Error: Supabase client not initialized')
+      return { success: false, error: 'Supabase client not initialized' }
+    }
+
+    console.log('Supabase client created, inserting banner...')
+
+    const insertData = {
+      title: title || '',
+      image_url: imageUrl,
+      position: 'home',
+      active: true,
+      order_index: layoutPosition || 0,
+    }
+
+    console.log('Insert data:', insertData)
+
+    // Insert banner without timeout (Supabase should respond quickly)
     const { data, error } = await supabase
       .from('banners')
-      .insert({
-        title: title || '',
-        image_url: imageUrl,
-        position: 'home',
-        active: true,
-        order_index: layoutPosition || 0,
-      })
+      .insert(insertData)
       .select()
       .single()
 
+    console.log('Insert result:', { data, error })
+
     if (error) {
-      console.error('Error creating banner from URL:', error)
-      return { success: false, error }
+      console.error('Error creating banner from URL:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
+      
+      // Check for RLS policy error
+      if (error.code === '42501' || error.message?.includes('permission') || error.message?.includes('policy')) {
+        return { 
+          success: false, 
+          error: 'Permission denied. Please check Supabase RLS policies. Make sure banners table allows INSERT operations.' 
+        }
+      }
+      
+      return { 
+        success: false, 
+        error: error.message || error.details || error.hint || 'Failed to create banner' 
+      }
     }
 
+    if (!data) {
+      console.error('Error: No data returned from banner creation')
+      return { success: false, error: 'No data returned from banner creation' }
+    }
+
+    console.log('Banner created successfully:', data.id)
     return { success: true, id: data.id, imageUrl }
   } catch (error) {
     console.error('Error creating banner from URL:', error)
-    return { success: false, error }
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred' 
+    }
   }
 }
 
 export async function updateBanner(id: string, updates: Partial<Banner>) {
   try {
+    const supabase = createClient()
     const updateData: any = {}
 
     if (updates.title !== undefined) updateData.title = updates.title

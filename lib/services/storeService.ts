@@ -16,9 +16,8 @@ export interface Store {
   createdAt?: string
 }
 
-const supabase = createClient()
-
 export async function getStores(): Promise<Store[]> {
+  const supabase = createClient()
   try {
     const { data, error } = await supabase
       .from('stores')
@@ -53,6 +52,14 @@ export async function getStores(): Promise<Store[]> {
 
 export async function getTrendingStores(): Promise<(Store | null)[]> {
   try {
+    const supabase = createClient()
+    
+    // Check if Supabase is properly initialized
+    if (!supabase) {
+      console.error('Error: Supabase client not initialized')
+      return Array(8).fill(null)
+    }
+
     const { data, error } = await supabase
       .from('stores')
       .select('*')
@@ -62,7 +69,12 @@ export async function getTrendingStores(): Promise<(Store | null)[]> {
       .limit(8)
 
     if (error) {
-      console.error('Error getting trending stores:', error)
+      console.error('Error getting trending stores:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
       return Array(8).fill(null)
     }
 
@@ -96,6 +108,7 @@ export async function getTrendingStores(): Promise<(Store | null)[]> {
 
 export async function createStore(store: Omit<Store, 'id'>) {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('stores')
       .insert({
@@ -129,6 +142,7 @@ export async function createStore(store: Omit<Store, 'id'>) {
 
 export async function getStoreById(id: string): Promise<Store | null> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('stores')
       .select('*')
@@ -163,6 +177,7 @@ export async function getStoreById(id: string): Promise<Store | null> {
 
 export async function getStoreBySlug(slug: string): Promise<Store | null> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('stores')
       .select('*')
@@ -197,6 +212,7 @@ export async function getStoreBySlug(slug: string): Promise<Store | null> {
 
 export async function isSlugUnique(slug: string, excludeStoreId?: string): Promise<boolean> {
   try {
+    const supabase = createClient()
     let query = supabase.from('stores').select('id').eq('slug', slug)
 
     if (excludeStoreId) {
@@ -219,6 +235,7 @@ export async function isSlugUnique(slug: string, excludeStoreId?: string): Promi
 
 export async function updateStore(id: string, updates: Partial<Store>) {
   try {
+    const supabase = createClient()
     const updateData: any = {
       updated_at: new Date().toISOString(),
     }
@@ -254,6 +271,7 @@ export async function updateStore(id: string, updates: Partial<Store>) {
 
 export async function deleteStore(id: string) {
   try {
+    const supabase = createClient()
     const { error } = await supabase
       .from('stores')
       .delete()
@@ -273,6 +291,7 @@ export async function deleteStore(id: string) {
 
 export async function getStoresByCategoryId(categoryId: string): Promise<Store[]> {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('stores')
       .select('*')

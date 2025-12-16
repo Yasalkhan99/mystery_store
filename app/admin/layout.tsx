@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 
 export default function AdminLayout({
@@ -14,7 +14,9 @@ export default function AdminLayout({
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
-  const supabase = createClient()
+  
+  // Use useMemo to create client only once
+  const supabase = useMemo(() => createClient(), [])
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

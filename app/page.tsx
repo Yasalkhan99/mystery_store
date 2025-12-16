@@ -2,6 +2,7 @@
 
 import Navbar from "./components/Navbar";
 import HeroBanners from "./components/HeroBanners";
+import MultiPanelHero from "./components/MultiPanelHero";
 import HowItWorks from "./components/HowItWorks";
 import TrendingStores from "./components/TrendingStores";
 import PopularCoupons from "./components/PopularCoupons";
@@ -15,8 +16,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      {/* Hero Section with Banners */}
-      <HeroBanners />
+      {/* Hero Section with Multi-Panel Layout */}
+      <MultiPanelHero />
+      {/* Alternative: Use HeroBanners for different layout */}
+      {/* <HeroBanners /> */}
       {/* How It Works Section */}
       <HowItWorks />
       {/* Trending Stores Section */}
