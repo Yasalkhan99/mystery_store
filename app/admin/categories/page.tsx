@@ -39,6 +39,8 @@ export default function CategoriesPage() {
   const [backgroundColor, setBackgroundColor] = useState('#FF6B9D');
   const [extractingLogo, setExtractingLogo] = useState(false);
   const [fileInputKey, setFileInputKey] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -130,19 +132,34 @@ export default function CategoriesPage() {
 
     // Need either logo file or logo URL
     if (!logoFile && !logoUrl) {
-      alert('Please wait for logo to be extracted or upload a logo manually');
+      setErrorMessage('Please wait for logo to be extracted or upload a logo manually');
       return;
     }
 
-    const result = editingCategory
-      ? await updateCategory(editingCategory.id!, { name, backgroundColor, logoUrl }, logoFile || undefined)
-      : await createCategory(name, backgroundColor, logoFile || undefined, logoUrl || undefined);
+    setCreating(true);
+    setErrorMessage(null);
 
-    if (result.success) {
-      fetchCategories();
-      resetForm();
-    } else {
-      alert('Failed to save category. Please try again.');
+    try {
+      const result = editingCategory
+        ? await updateCategory(editingCategory.id!, { name, backgroundColor, logoUrl }, logoFile || undefined)
+        : await createCategory(name, backgroundColor, logoFile || undefined, logoUrl || undefined);
+
+      if (result.success) {
+        fetchCategories();
+        resetForm();
+        setErrorMessage(null);
+      } else {
+        // Show detailed error message
+        const errorMsg = result.error?.message || 
+                        (typeof result.error === 'string' ? result.error : 'Failed to save category. Please try again.');
+        setErrorMessage(errorMsg);
+        console.error('Category save error:', result.error);
+      }
+    } catch (error: any) {
+      console.error('Unexpected error creating category:', error);
+      setErrorMessage(error?.message || 'An unexpected error occurred. Please try again.');
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -173,6 +190,7 @@ export default function CategoriesPage() {
     setLogoUrl('');
     setBackgroundColor('#FF6B9D');
     setFileInputKey(prev => prev + 1);
+    setErrorMessage(null);
   };
 
   return (
@@ -197,6 +215,12 @@ export default function CategoriesPage() {
           </h2>
           
           <form onSubmit={handleCreate} className="space-y-4">
+            {errorMessage && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <p className="font-semibold">Error:</p>
+                <p className="text-sm">{errorMessage}</p>
+              </div>
+            )}
             <div>
               <label htmlFor="name" className="block text-gray-700 text-sm font-semibold mb-2">
                 Category Name <span className="text-red-500">*</span>
@@ -324,9 +348,10 @@ export default function CategoriesPage() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
+              disabled={creating}
+              className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {editingCategory ? 'Update Category' : 'Create Category'}
+              {creating ? 'Creating...' : editingCategory ? 'Update Category' : 'Create Category'}
             </button>
           </form>
         </div>

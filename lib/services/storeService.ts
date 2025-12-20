@@ -2,11 +2,18 @@ import { createClient } from '@/lib/supabase/client'
 
 export interface Store {
   id?: string
+  storeId?: number  // Integer ID from database
   name: string
   subStoreName?: string
   slug?: string
   description: string
   logoUrl?: string
+  websiteUrl?: string
+  trackingLink?: string
+  merchantId?: string
+  networkId?: string
+  country?: string
+  status?: string
   voucherText?: string
   seoTitle?: string
   seoDescription?: string
@@ -31,15 +38,22 @@ export async function getStores(): Promise<Store[]> {
 
     return (data || []).map((item: any) => ({
       id: item.id,
-      name: item.name,
+      storeId: item.store_id,  // Integer ID from database
+      name: item.store_name || item.name,  // Support both old and new schema
       subStoreName: item.sub_store_name,
       slug: item.slug,
       description: item.description || '',
-      logoUrl: item.logo_url,
+      logoUrl: item.store_logo_url || item.logo_url,  // Support both old and new schema
+      websiteUrl: item.website_url,
+      trackingLink: item.tracking_link,
+      merchantId: item.merchant_id,
+      networkId: item.network_id,
+      country: item.country,
+      status: item.status,
       voucherText: item.voucher_text,
-      seoTitle: item.seo_title,
-      seoDescription: item.seo_description,
-      isTrending: item.featured,
+      seoTitle: item.seo_title || item.seoTitle,
+      seoDescription: item.seo_description || item.seoDescription,
+      isTrending: item.isTrending ?? item.featured,
       layoutPosition: item.layout_position,
       categoryId: item.category_id,
       createdAt: item.created_at,
@@ -53,7 +67,7 @@ export async function getStores(): Promise<Store[]> {
 export async function getTrendingStores(): Promise<(Store | null)[]> {
   try {
     const supabase = createClient()
-    
+
     // Check if Supabase is properly initialized
     if (!supabase) {
       console.error('Error: Supabase client not initialized')
@@ -63,7 +77,7 @@ export async function getTrendingStores(): Promise<(Store | null)[]> {
     const { data, error } = await supabase
       .from('stores')
       .select('*')
-      .eq('featured', true)
+      .eq('isTrending', true)
       .not('layout_position', 'is', null)
       .order('layout_position', { ascending: true })
       .limit(8)
@@ -79,25 +93,26 @@ export async function getTrendingStores(): Promise<(Store | null)[]> {
     }
 
     const layoutSlots: (Store | null)[] = Array(8).fill(null)
-    ;(data || []).forEach((item: any) => {
-      if (item.layout_position >= 1 && item.layout_position <= 8) {
-        layoutSlots[item.layout_position - 1] = {
-          id: item.id,
-          name: item.name,
-          subStoreName: item.sub_store_name,
-          slug: item.slug,
-          description: item.description || '',
-          logoUrl: item.logo_url,
-          voucherText: item.voucher_text,
-          seoTitle: item.seo_title,
-          seoDescription: item.seo_description,
-          isTrending: item.featured,
-          layoutPosition: item.layout_position,
-          categoryId: item.category_id,
-          createdAt: item.created_at,
+      ; (data || []).forEach((item: any) => {
+        if (item.layout_position >= 1 && item.layout_position <= 8) {
+          layoutSlots[item.layout_position - 1] = {
+            id: item.id,
+            storeId: item.store_id,
+            name: item.store_name || item.name,
+            subStoreName: item.sub_store_name,
+            slug: item.slug,
+            description: item.description || '',
+            logoUrl: item.store_logo_url || item.logo_url,
+            voucherText: item.voucher_text,
+            seoTitle: item.seo_title || item.seoTitle,
+            seoDescription: item.seo_description || item.seoDescription,
+            isTrending: item.isTrending ?? item.featured,
+            layoutPosition: item.layout_position,
+            categoryId: item.category_id,
+            createdAt: item.created_at,
+          }
         }
-      }
-    })
+      })
 
     return layoutSlots
   } catch (error) {
@@ -112,15 +127,15 @@ export async function createStore(store: Omit<Store, 'id'>) {
     const { data, error } = await supabase
       .from('stores')
       .insert({
-        name: store.name,
-        sub_store_name: store.subStoreName,
+        store_name: store.name,
+        subStoreName: store.subStoreName,
         slug: store.slug,
         description: store.description,
-        logo_url: store.logoUrl,
+        store_logo_url: store.logoUrl,
         voucher_text: store.voucherText,
-        seo_title: store.seoTitle,
-        seo_description: store.seoDescription,
-        featured: store.isTrending || false,
+        seoTitle: store.seoTitle,
+        seoDescription: store.seoDescription,
+        isTrending: store.isTrending || false,
         layout_position: store.layoutPosition,
         category_id: store.categoryId,
         created_at: new Date().toISOString(),
@@ -156,15 +171,16 @@ export async function getStoreById(id: string): Promise<Store | null> {
 
     return {
       id: data.id,
-      name: data.name,
+      storeId: data.store_id,
+      name: data.store_name || data.name,
       subStoreName: data.sub_store_name,
       slug: data.slug,
       description: data.description || '',
-      logoUrl: data.logo_url,
+      logoUrl: data.store_logo_url || data.logo_url,
       voucherText: data.voucher_text,
-      seoTitle: data.seo_title,
-      seoDescription: data.seo_description,
-      isTrending: data.featured,
+      seoTitle: data.seo_title || data.seoTitle,
+      seoDescription: data.seo_description || data.seoDescription,
+      isTrending: data.isTrending ?? data.featured,
       layoutPosition: data.layout_position,
       categoryId: data.category_id,
       createdAt: data.created_at,
@@ -191,15 +207,16 @@ export async function getStoreBySlug(slug: string): Promise<Store | null> {
 
     return {
       id: data.id,
-      name: data.name,
+      storeId: data.store_id,
+      name: data.store_name || data.name,
       subStoreName: data.sub_store_name,
       slug: data.slug,
       description: data.description || '',
-      logoUrl: data.logo_url,
+      logoUrl: data.store_logo_url || data.logo_url,
       voucherText: data.voucher_text,
-      seoTitle: data.seo_title,
-      seoDescription: data.seo_description,
-      isTrending: data.featured,
+      seoTitle: data.seo_title || data.seoTitle,
+      seoDescription: data.seo_description || data.seoDescription,
+      isTrending: data.isTrending ?? data.featured,
       layoutPosition: data.layout_position,
       categoryId: data.category_id,
       createdAt: data.created_at,
@@ -240,17 +257,20 @@ export async function updateStore(id: string, updates: Partial<Store>) {
       updated_at: new Date().toISOString(),
     }
 
-    if (updates.name) updateData.name = updates.name
-    if (updates.subStoreName !== undefined) updateData.sub_store_name = updates.subStoreName
+    if (updates.name) updateData.store_name = updates.name
+    if (updates.subStoreName !== undefined) updateData.subStoreName = updates.subStoreName
     if (updates.slug !== undefined) updateData.slug = updates.slug
     if (updates.description !== undefined) updateData.description = updates.description
-    if (updates.logoUrl !== undefined) updateData.logo_url = updates.logoUrl
+    if (updates.logoUrl !== undefined) updateData.store_logo_url = updates.logoUrl
     if (updates.voucherText !== undefined) updateData.voucher_text = updates.voucherText
-    if (updates.seoTitle !== undefined) updateData.seo_title = updates.seoTitle
-    if (updates.seoDescription !== undefined) updateData.seo_description = updates.seoDescription
-    if (updates.isTrending !== undefined) updateData.featured = updates.isTrending
+    if (updates.seoTitle !== undefined) updateData.seoTitle = updates.seoTitle
+    if (updates.seoDescription !== undefined) updateData.seoDescription = updates.seoDescription
+    if (updates.isTrending !== undefined) updateData.isTrending = updates.isTrending
     if (updates.layoutPosition !== undefined) updateData.layout_position = updates.layoutPosition
     if (updates.categoryId !== undefined) updateData.category_id = updates.categoryId
+    if (updates.merchantId !== undefined) updateData.merchant_id = updates.merchantId
+    if (updates.networkId !== undefined) updateData.network_id = updates.networkId
+    if (updates.trackingLink !== undefined) updateData.tracking_link = updates.trackingLink
 
     const { error } = await supabase
       .from('stores')
@@ -305,15 +325,16 @@ export async function getStoresByCategoryId(categoryId: string): Promise<Store[]
 
     return (data || []).map((item: any) => ({
       id: item.id,
-      name: item.name,
+      storeId: item.store_id,
+      name: item.store_name || item.name,
       subStoreName: item.sub_store_name,
       slug: item.slug,
       description: item.description || '',
-      logoUrl: item.logo_url,
+      logoUrl: item.store_logo_url || item.logo_url,
       voucherText: item.voucher_text,
-      seoTitle: item.seo_title,
-      seoDescription: item.seo_description,
-      isTrending: item.featured,
+      seoTitle: item.seo_title || item.seoTitle,
+      seoDescription: item.seo_description || item.seoDescription,
+      isTrending: item.isTrending ?? item.featured,
       layoutPosition: item.layout_position,
       categoryId: item.category_id,
       createdAt: item.created_at,

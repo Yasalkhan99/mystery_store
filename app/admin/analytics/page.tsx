@@ -16,8 +16,11 @@ export default function AnalyticsPage() {
       const now = Date.now();
       const expiring = data.filter((c) => {
         if (!c.expiryDate) return false;
+        const expiryTime = typeof c.expiryDate === 'string'
+          ? new Date(c.expiryDate).getTime()
+          : (c.expiryDate as any).toDate().getTime();
         const daysUntilExpiry = Math.floor(
-          (c.expiryDate.toDate().getTime() - now) / (1000 * 60 * 60 * 24)
+          (expiryTime - now) / (1000 * 60 * 60 * 24)
         );
         return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
       }).length;
@@ -42,9 +45,9 @@ export default function AnalyticsPage() {
   const avgUsageRate =
     coupons.length > 0
       ? (
-          coupons.reduce((sum, c) => sum + (c.currentUses / c.maxUses) * 100, 0) /
-          coupons.length
-        ).toFixed(1)
+        coupons.reduce((sum, c) => sum + (c.currentUses / c.maxUses) * 100, 0) /
+        coupons.length
+      ).toFixed(1)
       : '0.0';
 
   return (

@@ -19,14 +19,11 @@ export async function createLogoFromUrl(
   websiteUrl?: string
 ) {
   try {
-    // Note: Logos can be stored in stores table or a separate logos table
-    // For now, we'll use stores table with a flag or create a separate table
-    // Since we don't have a logos table in schema, we'll use stores
     const { data, error } = await supabase
       .from('stores')
       .insert({
-        name: name || '',
-        logo_url: logoUrl,
+        store_name: name || '',
+        store_logo_url: logoUrl,
         website_url: websiteUrl || logoUrl,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -48,11 +45,10 @@ export async function createLogoFromUrl(
 
 export async function getLogos(): Promise<Logo[]> {
   try {
-    // Using stores table for logos (or create separate logos table)
     const { data, error } = await supabase
       .from('stores')
-      .select('id, name, logo_url, website_url, created_at, updated_at')
-      .not('logo_url', 'is', null)
+      .select('id, store_name, store_logo_url, website_url, created_at, updated_at')
+      .not('store_logo_url', 'is', null)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -62,10 +58,10 @@ export async function getLogos(): Promise<Logo[]> {
 
     return (data || []).map((item: any, index: number) => ({
       id: item.id,
-      name: item.name,
-      logoUrl: item.logo_url,
+      name: item.store_name,
+      logoUrl: item.store_logo_url,
       websiteUrl: item.website_url,
-      layoutPosition: index + 1, // Assign sequential positions
+      layoutPosition: index + 1,
       createdAt: item.created_at,
       updatedAt: item.updated_at,
     }))
@@ -79,7 +75,7 @@ export async function getLogoById(id: string): Promise<Logo | null> {
   try {
     const { data, error } = await supabase
       .from('stores')
-      .select('id, name, logo_url, website_url, created_at, updated_at')
+      .select('id, store_name, store_logo_url, website_url, created_at, updated_at')
       .eq('id', id)
       .single()
 
@@ -90,8 +86,8 @@ export async function getLogoById(id: string): Promise<Logo | null> {
 
     return {
       id: data.id,
-      name: data.name,
-      logoUrl: data.logo_url || '',
+      name: data.store_name,
+      logoUrl: data.store_logo_url || '',
       websiteUrl: data.website_url,
       layoutPosition: null,
       createdAt: data.created_at,
@@ -107,8 +103,8 @@ export async function getLogosWithLayout(): Promise<(Logo | null)[]> {
   try {
     const { data, error } = await supabase
       .from('stores')
-      .select('id, name, logo_url, website_url, created_at, updated_at')
-      .not('logo_url', 'is', null)
+      .select('id, store_name, store_logo_url, website_url, created_at, updated_at')
+      .not('store_logo_url', 'is', null)
       .order('created_at', { ascending: false })
       .limit(18)
 
@@ -118,19 +114,19 @@ export async function getLogosWithLayout(): Promise<(Logo | null)[]> {
     }
 
     const layoutSlots: (Logo | null)[] = Array(18).fill(null)
-    ;(data || []).forEach((item: any, index: number) => {
-      if (index < 18) {
-        layoutSlots[index] = {
-          id: item.id,
-          name: item.name,
-          logoUrl: item.logo_url || '',
-          websiteUrl: item.website_url,
-          layoutPosition: index + 1,
-          createdAt: item.created_at,
-          updatedAt: item.updated_at,
+      ; (data || []).forEach((item: any, index: number) => {
+        if (index < 18) {
+          layoutSlots[index] = {
+            id: item.id,
+            name: item.store_name,
+            logoUrl: item.store_logo_url || '',
+            websiteUrl: item.website_url,
+            layoutPosition: index + 1,
+            createdAt: item.created_at,
+            updatedAt: item.updated_at,
+          }
         }
-      }
-    })
+      })
 
     return layoutSlots
   } catch (error) {
@@ -145,8 +141,8 @@ export async function updateLogo(id: string, updates: Partial<Logo>) {
       updated_at: new Date().toISOString(),
     }
 
-    if (updates.name) updateData.name = updates.name
-    if (updates.logoUrl) updateData.logo_url = updates.logoUrl
+    if (updates.name) updateData.store_name = updates.name
+    if (updates.logoUrl) updateData.store_logo_url = updates.logoUrl
     if (updates.websiteUrl) updateData.website_url = updates.websiteUrl
 
     const { error } = await supabase

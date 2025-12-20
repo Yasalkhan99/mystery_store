@@ -537,12 +537,10 @@ export async function createCouponFromUrl(coupon: Omit<Coupon, 'id'>, logoUrl?: 
       discount_type: coupon.discountType,
       description: coupon.description,
       status: coupon.isActive ? 'active' : 'inactive',
-      max_uses: coupon.maxUses || 0,
-      current_uses: coupon.currentUses || 0,
       expiry_date: coupon.expiryDate,
       logo_url: finalLogoUrl,
       url: coupon.url,
-      coupon_type: coupon.coupon_type,
+      coupon_type: coupon.couponType,
       get_code_text: coupon.getCodeText,
       get_deal_text: coupon.getDealText,
       featured: coupon.isPopular || false,
@@ -554,10 +552,8 @@ export async function createCouponFromUrl(coupon: Omit<Coupon, 'id'>, logoUrl?: 
       updated_at: new Date().toISOString(),
     }
 
-    console.log('📝 Creating coupon from URL:', {
-      storeIds: coupon.storeIds,
-      logoUrl: finalLogoUrl,
-    })
+    console.log('📤 Sending coupon data to Supabase:')
+    console.log(couponData)
 
     const supabase = createClient()
     const { data, error } = await supabase
@@ -566,15 +562,30 @@ export async function createCouponFromUrl(coupon: Omit<Coupon, 'id'>, logoUrl?: 
       .select()
       .single()
 
+    console.log('📥 Supabase response - Has data:', !!data, 'Has error:', !!error)
+    if (data) console.log('Data:', data)
     if (error) {
-      console.error('Error creating coupon from URL:', error)
+      console.log('Error object:', error)
+      console.log('Error properties:', Object.keys(error))
+      console.log('Error message:', error.message)
+      console.log('Error code:', error.code)
+    }
+
+    if (error) {
+      console.error('❌ COUPON CREATION ERROR:')
+      console.error('Message:', error.message)
+      console.error('Code:', error.code)
+      console.error('Details:', error.details)
+      console.error('Hint:', error.hint)
+      console.error('Full error:', error)
       return { success: false, error }
     }
 
     console.log('✅ Coupon created successfully with ID:', data.id)
     return { success: true, id: data.id }
   } catch (error) {
-    console.error('Error creating coupon from URL:', error)
+    console.error('💥 EXCEPTION during coupon creation:')
+    console.error(error)
     return { success: false, error }
   }
 }
@@ -597,35 +608,35 @@ export async function getPopularCoupons(): Promise<(Coupon | null)[]> {
     }
 
     const layoutSlots: (Coupon | null)[] = Array(8).fill(null)
-    ;(data || []).forEach((item: any) => {
-      if (item.layout_position >= 1 && item.layout_position <= 8) {
-        layoutSlots[item.layout_position - 1] = {
-          id: item.id,
-          code: item.code,
-          storeName: item.store_name,
-          storeIds: item.store_ids || [],
-          discount: item.discount_value,
-          discountType: item.discount_type,
-          description: item.description,
-          isActive: item.status === 'active',
-          maxUses: item.max_uses || 0,
-          currentUses: item.current_uses || 0,
-          expiryDate: item.expiry_date,
-          logoUrl: item.logo_url,
-          url: item.url,
-          couponType: item.coupon_type,
-          getCodeText: item.get_code_text,
-          getDealText: item.get_deal_text,
-          isPopular: item.featured,
-          layoutPosition: item.layout_position,
-          isLatest: item.is_latest,
-          latestLayoutPosition: item.latest_layout_position,
-          categoryId: item.category_id,
-          createdAt: item.created_at,
-          updatedAt: item.updated_at,
+      ; (data || []).forEach((item: any) => {
+        if (item.layout_position >= 1 && item.layout_position <= 8) {
+          layoutSlots[item.layout_position - 1] = {
+            id: item.id,
+            code: item.code,
+            storeName: item.store_name,
+            storeIds: item.store_ids || [],
+            discount: item.discount_value,
+            discountType: item.discount_type,
+            description: item.description,
+            isActive: item.status === 'active',
+            maxUses: item.max_uses || 0,
+            currentUses: item.current_uses || 0,
+            expiryDate: item.expiry_date,
+            logoUrl: item.logo_url,
+            url: item.url,
+            couponType: item.coupon_type,
+            getCodeText: item.get_code_text,
+            getDealText: item.get_deal_text,
+            isPopular: item.featured,
+            layoutPosition: item.layout_position,
+            isLatest: item.is_latest,
+            latestLayoutPosition: item.latest_layout_position,
+            categoryId: item.category_id,
+            createdAt: item.created_at,
+            updatedAt: item.updated_at,
+          }
         }
-      }
-    })
+      })
 
     return layoutSlots
   } catch (error) {
@@ -637,7 +648,7 @@ export async function getPopularCoupons(): Promise<(Coupon | null)[]> {
 export async function getLatestCoupons(): Promise<(Coupon | null)[]> {
   try {
     const supabase = createClient()
-    
+
     // Check if Supabase is properly initialized
     if (!supabase) {
       console.error('Error: Supabase client not initialized')
@@ -664,35 +675,35 @@ export async function getLatestCoupons(): Promise<(Coupon | null)[]> {
     }
 
     const layoutSlots: (Coupon | null)[] = Array(8).fill(null)
-    ;(data || []).forEach((item: any) => {
-      if (item.latest_layout_position >= 1 && item.latest_layout_position <= 8) {
-        layoutSlots[item.latest_layout_position - 1] = {
-          id: item.id,
-          code: item.code,
-          storeName: item.store_name,
-          storeIds: item.store_ids || [],
-          discount: item.discount_value,
-          discountType: item.discount_type,
-          description: item.description,
-          isActive: item.status === 'active',
-          maxUses: item.max_uses || 0,
-          currentUses: item.current_uses || 0,
-          expiryDate: item.expiry_date,
-          logoUrl: item.logo_url,
-          url: item.url,
-          couponType: item.coupon_type,
-          getCodeText: item.get_code_text,
-          getDealText: item.get_deal_text,
-          isPopular: item.featured,
-          layoutPosition: item.layout_position,
-          isLatest: item.is_latest,
-          latestLayoutPosition: item.latest_layout_position,
-          categoryId: item.category_id,
-      createdAt: item.created_at,
-      updatedAt: item.updated_at,
+      ; (data || []).forEach((item: any) => {
+        if (item.latest_layout_position >= 1 && item.latest_layout_position <= 8) {
+          layoutSlots[item.latest_layout_position - 1] = {
+            id: item.id,
+            code: item.code,
+            storeName: item.store_name,
+            storeIds: item.store_ids || [],
+            discount: item.discount_value,
+            discountType: item.discount_type,
+            description: item.description,
+            isActive: item.status === 'active',
+            maxUses: item.max_uses || 0,
+            currentUses: item.current_uses || 0,
+            expiryDate: item.expiry_date,
+            logoUrl: item.logo_url,
+            url: item.url,
+            couponType: item.coupon_type,
+            getCodeText: item.get_code_text,
+            getDealText: item.get_deal_text,
+            isPopular: item.featured,
+            layoutPosition: item.layout_position,
+            isLatest: item.is_latest,
+            latestLayoutPosition: item.latest_layout_position,
+            categoryId: item.category_id,
+            createdAt: item.created_at,
+            updatedAt: item.updated_at,
+          }
         }
-      }
-    })
+      })
 
     return layoutSlots
   } catch (error) {

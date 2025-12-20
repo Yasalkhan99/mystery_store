@@ -97,15 +97,15 @@ export default function EditCouponPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate coupon code only if coupon type is 'code'
     if (formData.couponType === 'code' && (!formData.code || formData.code.trim() === '')) {
       alert('Please enter a coupon code (required for code type coupons)');
       return;
     }
-    
+
     setSaving(true);
-    
+
     // Extract original URL if it's a Cloudinary URL
     const logoUrlToSave = logoUrl ? extractOriginalCloudinaryUrl(logoUrl) : undefined;
     const updates: any = {
@@ -114,17 +114,17 @@ export default function EditCouponPage() {
       couponType: formData.couponType || 'code',
       ...(logoUrlToSave ? { logoUrl: logoUrlToSave } : {}),
     };
-    
+
     // For deal type, don't include code field
     if (formData.couponType === 'deal') {
       delete updates.code;
     }
-    
+
     // Only include storeIds if there are selected stores
     if (selectedStoreIds.length > 0) {
       updates.storeIds = selectedStoreIds;
     }
-    
+
     if (isSupabaseCoupon) {
       // Update via Supabase PATCH API
       try {
@@ -214,7 +214,7 @@ export default function EditCouponPage() {
         <form onSubmit={handleSave} className="space-y-4">
           {/* Add the same store selection section as in create form */}
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
+            <label className="block text-gray-900 text-sm font-bold mb-2">
               Add to Stores (Select one or more existing stores)
             </label>
             {stores.length > 0 ? (
@@ -225,8 +225,8 @@ export default function EditCouponPage() {
                   onClick={() => setIsStoreDropdownOpen(!isStoreDropdownOpen)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-between"
                 >
-                  <span className="text-gray-700">
-                    {selectedStoreIds.length > 0 
+                  <span className="text-gray-900">
+                    {selectedStoreIds.length > 0
                       ? `${selectedStoreIds.length} store${selectedStoreIds.length > 1 ? 's' : ''} selected`
                       : 'Select stores...'}
                   </span>
@@ -262,7 +262,7 @@ export default function EditCouponPage() {
                                   newSelected = selectedStoreIds.filter(id => id !== store.id);
                                 }
                                 setSelectedStoreIds(newSelected);
-                                
+
                                 // Auto-populate storeName from first selected store
                                 if (newSelected.length > 0) {
                                   const firstStore = stores.find(s => s.id === newSelected[0]);
@@ -275,7 +275,9 @@ export default function EditCouponPage() {
                               }}
                               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                             />
-                            <span className="ml-3 text-sm text-gray-700">{store.name}</span>
+                            <span className="ml-3 text-sm text-gray-900 font-medium">
+                              {store.storeId ? `${store.storeId} - ` : ''}{store.name}
+                            </span>
                           </label>
                         );
                       })}
@@ -288,7 +290,7 @@ export default function EditCouponPage() {
                 <p className="text-sm text-gray-500">No stores available. Please create stores first.</p>
               </div>
             )}
-            
+
             {/* Selected Stores Tags */}
             {selectedStoreIds.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
@@ -299,7 +301,7 @@ export default function EditCouponPage() {
                       key={storeId}
                       className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs"
                     >
-                      {store.name}
+                      {store.storeId ? `${store.storeId} - ` : ''}{store.name}
                       <button
                         type="button"
                         onClick={() => {
@@ -609,8 +611,8 @@ export default function EditCouponPage() {
                 checked={formData.isLatest || false}
                 onChange={(e) => {
                   const isLatest = e.target.checked;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     isLatest,
                     // Clear layout position if latest is disabled
                     latestLayoutPosition: isLatest ? formData.latestLayoutPosition : null
@@ -631,8 +633,8 @@ export default function EditCouponPage() {
                 checked={formData.isPopular || false}
                 onChange={(e) => {
                   const isPopular = e.target.checked;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     isPopular,
                     // Clear layout position if popular is disabled
                     layoutPosition: isPopular ? formData.layoutPosition : null
@@ -657,8 +659,8 @@ export default function EditCouponPage() {
                 value={formData.latestLayoutPosition || ''}
                 onChange={(e) => {
                   const position = e.target.value ? parseInt(e.target.value) : null;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     latestLayoutPosition: position,
                     // Auto-enable latest if layout position is assigned
                     isLatest: position !== null ? true : formData.isLatest
@@ -689,8 +691,8 @@ export default function EditCouponPage() {
                 value={formData.layoutPosition || ''}
                 onChange={(e) => {
                   const position = e.target.value ? parseInt(e.target.value) : null;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     layoutPosition: position,
                     // Auto-enable popular if layout position is assigned
                     isPopular: position !== null ? true : formData.isPopular

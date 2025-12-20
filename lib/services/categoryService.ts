@@ -100,22 +100,60 @@ export async function createCategory(
       }
     }
 
+    const insertData: any = {
+      name,
+      icon_url: finalLogoUrl,
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    }
+
+    // Only add background_color if provided
+    if (backgroundColor) {
+      insertData.background_color = backgroundColor
+    }
+
+    // Don't manually set created_at/updated_at - let database defaults handle it
+    // If columns don't exist, they will be created by the database defaults
+
     const { data, error } = await supabase
       .from('categories')
-      .insert({
-        name,
-        icon_url: finalLogoUrl,
-        background_color: backgroundColor,
-        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .insert(insertData)
       .select()
       .single()
 
     if (error) {
+      // Log full error for debugging
       console.error('Error creating category:', error)
-      return { success: false, error }
+      console.error('Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+        fullError: JSON.stringify(error, Object.getOwnPropertyNames(error))
+      })
+      
+      // If any column doesn't exist, provide helpful error
+      if (error.code === 'PGRST204') {
+        const missingColumn = error.message?.match(/'([^']+)'/)?.[1] || 'unknown column'
+        return {
+          success: false,
+          error: {
+            message: `Database schema error: ${missingColumn} column missing. Please run fix_categories_schema.sql in Supabase SQL Editor.`,
+            code: error.code,
+            originalError: error.message || 'Unknown error'
+          }
+        }
+      }
+      
+      // Return a serializable error object
+      return {
+        success: false,
+        error: {
+          message: error.message || 'Failed to create category',
+          details: error.details || null,
+          hint: error.hint || null,
+          code: error.code || 'UNKNOWN_ERROR'
+        }
+      }
     }
 
     return { success: true, id: data.id }
@@ -229,13 +267,14 @@ export async function updateCategory(
       }
     }
 
-    const updateData: any = {
-      updated_at: new Date().toISOString(),
-    }
+    const updateData: any = {}
 
     if (updates.name) updateData.name = updates.name
     if (logoUrl !== undefined) updateData.icon_url = logoUrl
     if (updates.backgroundColor) updateData.background_color = updates.backgroundColor
+
+    // Don't manually set updated_at - let database default/trigger handle it
+    // If column doesn't exist, user needs to run fix_categories_schema.sql
 
     const { error } = await supabase
       .from('categories')
@@ -243,7 +282,26 @@ export async function updateCategory(
       .eq('id', id)
 
     if (error) {
-      console.error('Error updating category:', error)
+      console.error('Error updating category:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
+      
+      // If any column doesn't exist, provide helpful error
+      if (error.code === 'PGRST204') {
+        const missingColumn = error.message?.match(/'([^']+)'/)?.[1] || 'unknown column'
+        return {
+          success: false,
+          error: {
+            message: `Database schema error: ${missingColumn} column missing. Please run fix_categories_schema.sql in Supabase SQL Editor.`,
+            code: error.code,
+            originalError: error.message
+          }
+        }
+      }
+      
       return { success: false, error }
     }
 

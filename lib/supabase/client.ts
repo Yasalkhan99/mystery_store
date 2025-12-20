@@ -25,6 +25,14 @@ export const supabaseBrowser = (): SupabaseClient => {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true
+    },
+    db: {
+      schema: 'public'
+    },
+    global: {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
+      }
     }
   })
 

@@ -36,6 +36,32 @@ body {
   position: relative;
 }
 
+/* Input and Textarea Styling for Better Readability */
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="date"],
+textarea,
+select {
+  color: #111827 !important; /* gray-900 */
+  font-weight: 500;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important; /* gray-400 */
+  font-weight: 400;
+}
+
+/* Ensure labels are dark and readable */
+label {
+  color: #111827 !important; /* gray-900 */
+}
+
 @keyframes slideLeft {
   0% {
     transform: translateX(0);

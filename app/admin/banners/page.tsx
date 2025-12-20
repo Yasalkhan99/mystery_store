@@ -37,7 +37,7 @@ export default function BannersPage() {
     e.preventDefault();
     setError(null);
     setCreating(true);
-    
+
     try {
       // Check if layout position is already taken
       if (layoutPosition !== null) {
@@ -54,7 +54,7 @@ export default function BannersPage() {
           await updateBanner(bannersAtPosition[0].id!, { layoutPosition: null });
         }
       }
-      
+
       if (uploadMethod === 'file') {
         if (!imageFile) {
           setError('Please select an image file');
@@ -82,16 +82,16 @@ export default function BannersPage() {
           setCreating(false);
           return;
         }
-        
+
         // Use extracted URL if available, otherwise use original
         const finalUrl = extractedUrl && extractedUrl !== imageUrl ? extractedUrl : imageUrl;
-        
+
         console.log('Creating banner from URL:', { title, imageUrl: finalUrl, layoutPosition });
-        
+
         const result = await createBannerFromUrl(title, finalUrl, layoutPosition);
-        
+
         console.log('Banner creation result:', result);
-        
+
         if (result.success) {
           await fetchBanners();
           setShowForm(false);
@@ -103,9 +103,9 @@ export default function BannersPage() {
           setError(null);
           alert('Banner created successfully!');
         } else {
-          const errorMsg = typeof result.error === 'string' 
-            ? result.error 
-            : result.error?.message || JSON.stringify(result.error) || 'Failed to create banner';
+          const errorMsg = typeof result.error === 'string'
+            ? result.error
+            : (result.error as any)?.message || JSON.stringify(result.error) || 'Failed to create banner';
           setError(errorMsg);
           console.error('Banner creation failed:', result.error);
           alert(`Error: ${errorMsg}`);
@@ -243,7 +243,7 @@ export default function BannersPage() {
                 required
               />
             </div>
-            
+
             {!editingBanner && (
               <div>
                 <label className="block text-gray-700 text-sm font-semibold mb-2">Upload Method</label>
@@ -396,7 +396,7 @@ export default function BannersPage() {
                 )}
               </div>
             )}
-            
+
             <div className="flex gap-3">
               <button
                 type="submit"
@@ -446,7 +446,7 @@ export default function BannersPage() {
                         value={banner.layoutPosition || ''}
                         onChange={async (e) => {
                           const position = e.target.value ? parseInt(e.target.value) : null;
-                          
+
                           // Check if position is already taken
                           if (position !== null) {
                             const bannersAtPosition = banners.filter(
@@ -461,7 +461,7 @@ export default function BannersPage() {
                               await updateBanner(bannersAtPosition[0].id!, { layoutPosition: null });
                             }
                           }
-                          
+
                           // Update current banner
                           const { updateBanner } = await import('@/lib/services/bannerService');
                           await updateBanner(banner.id!, { layoutPosition: position });

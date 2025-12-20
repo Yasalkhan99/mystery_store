@@ -124,10 +124,48 @@ export default function CouponsPage() {
     }
 
     const extension = file.name.split('.').pop()?.toLowerCase();
-    if (extension !== 'csv') {
+
+    if (extension === 'csv') {
+      // Handle CSV files
+      file
+        .text()
+        .then((text) => {
+          const rows = parseCsv(text);
+          setUploadPreviewRows(rows);
+          setUploadPreviewError(null);
+        })
+        .catch((error) => {
+          console.error('Error reading CSV file:', error);
+          setUploadPreviewRows([]);
+          setUploadPreviewError('Failed to read CSV file. Please try again.');
+        });
+    } else if (extension === 'xlsx' || extension === 'xls') {
+      // Handle Excel files
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          const XLSX = require('xlsx');
+          const workbook = XLSX.read(data, { type: 'binary' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          setUploadPreviewRows(jsonData as string[][]);
+          setUploadPreviewError(null);
+        } catch (error) {
+          console.error('Error reading Excel file:', error);
+          setUploadPreviewRows([]);
+          setUploadPreviewError('Failed to read Excel file. Please try again.');
+        }
+      };
+      reader.onerror = () => {
+        setUploadPreviewRows([]);
+        setUploadPreviewError('Failed to read Excel file. Please try again.');
+      };
+      reader.readAsBinaryString(file);
+    } else {
       setUploadPreviewRows([]);
-      setUploadPreviewError('Preview currently supports only CSV files. Please upload a .csv file.');
-      return;
+      setUploadPreviewError('Please upload a CSV or Excel (.xlsx, .xls) file.');
     }
 
     file
@@ -167,44 +205,66 @@ export default function CouponsPage() {
     const header = headerRow.map((h) => h.toString().trim().toLowerCase());
     const indexOf = (name: string) => header.indexOf(name.toLowerCase());
 
-    const idxCouponType = indexOf('couponType');
+    // Support both old CSV format and new Excel format
+    const idxStoreName = indexOf('store name');
+    const idxTitle = indexOf('title');
+    const idxCouponType = indexOf('coupontype') !== -1 ? indexOf('coupontype') : indexOf('type');
     const idxCode = indexOf('code');
-    const idxCategoryId = indexOf('categoryId');
-    const idxCurrentUses = indexOf('currentUses');
+    const idxCategoryId = indexOf('categoryid');
+    const idxCurrentUses = indexOf('currentuses');
     const idxDescription = indexOf('description');
     const idxDiscount = indexOf('discount');
-    const idxDiscountType = indexOf('discountType');
-    const idxExpiryDate = indexOf('expiryDate');
-    const idxGetCodeText = indexOf('getCodeText');
-    const idxGetDealText = indexOf('getDealText');
-    const idxIsActive = indexOf('isActive');
-    const idxIsLatest = indexOf('isLatest');
-    const idxIsPopular = indexOf('isPopular');
-    const idxLatestLayoutPosition = indexOf('latestLayoutPosition');
-    const idxLayoutPosition = indexOf('layoutPosition');
-    const idxLogoUrl = indexOf('logoUrl');
-    const idxMaxUses = indexOf('maxUses');
+    const idxDiscountType = indexOf('discounttype');
+    const idxExpiryDate = indexOf('expirydate') !== -1 ? indexOf('expirydate') : indexOf('expiry');
+    const idxGetCodeText = indexOf('getcodetext');
+    const idxGetDealText = indexOf('getdealtext') !== -1 ? indexOf('getdealtext') : indexOf('deal');
+    const idxIsActive = indexOf('isactive');
+    const idxIsLatest = indexOf('islatest');
+    const idxIsPopular = indexOf('ispopular');
+    const idxLatestLayoutPosition = indexOf('latestlayoutposition');
+    const idxLayoutPosition = indexOf('layoutposition');
+    const idxLogoUrl = indexOf('logourl');
+    const idxMaxUses = indexOf('maxuses');
     const idxStoreId = indexOf('store_id');
-    const idxUrl = indexOf('url');
+    const idxUrl = indexOf('url') !== -1 ? indexOf('url') : (indexOf('tracking link') !== -1 ? indexOf('tracking link') : indexOf('coupon url'));
 
-    // Only store_id is strictly required for database, but typically we want a code or description
-    if (idxStoreId === -1) {
-      setUploadPreviewError('CSV must include "store_id" column.');
+    // Either store_id or store name is required
+    if (idxStoreId === -1 && idxStoreName === -1) {
+      setUploadPreviewError('File must include either "store_id" or "Store Name" column.');
       return;
     }
 
     const supabaseRows = dataRows
       .map((row) => {
-        const store_id = parseInt(row[idxStoreId] || '0', 10);
+        let store_id = idxStoreId !== -1 ? parseInt(row[idxStoreId] || '0', 10) : 0;
+
+        // If no store_id, try to find store by name
+        if (!store_id && idxStoreName !== -1) {
+          const storeName = row[idxStoreName]?.toString().trim();
+          if (storeName) {
+            const foundStore = stores.find(s =>
+              s.name?.toLowerCase() === storeName.toLowerCase()
+            );
+            if (foundStore && foundStore.storeId) {
+              store_id = foundStore.storeId;
+            }
+          }
+        }
+
         if (!store_id) return null;
+
+        // Use Title if available, otherwise use Description
+        const description = idxTitle !== -1 && row[idxTitle]
+          ? row[idxTitle]
+          : (idxDescription !== -1 ? row[idxDescription] : null);
 
         return {
           store_id,
-          couponType: idxCouponType !== -1 ? row[idxCouponType] || 'code' : 'code',
+          couponType: idxCouponType !== -1 ? (row[idxCouponType]?.toString().toLowerCase() === 'deal' ? 'deal' : 'code') : 'code',
           code: idxCode !== -1 ? row[idxCode] || null : null,
           categoryId: idxCategoryId !== -1 ? row[idxCategoryId] || null : null,
           currentUses: idxCurrentUses !== -1 ? parseInt(row[idxCurrentUses] || '0', 10) : 0,
-          description: idxDescription !== -1 ? row[idxDescription] || null : null,
+          description,
           discount: idxDiscount !== -1 ? parseFloat(row[idxDiscount] || '0') : 0,
           discountType: idxDiscountType !== -1 ? row[idxDiscountType] || 'percentage' : 'percentage',
           expiryDate: idxExpiryDate !== -1 ? row[idxExpiryDate] || null : null,
@@ -335,25 +395,25 @@ export default function CouponsPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (isCreating) return; // Prevent double submission
-    
+
     setIsCreating(true);
-    
+
     // Validate coupon code only if coupon type is 'code'
     if (formData.couponType === 'code' && (!formData.code || formData.code.trim() === '')) {
       alert('Please enter a coupon code (required for code type coupons)');
       setIsCreating(false);
       return;
     }
-    
+
     // Validate required fields
     if (!formData.storeName || formData.storeName.trim() === '') {
       alert('Please enter a store name (Coupon Title)');
       setIsCreating(false);
       return;
     }
-    
+
     // Check if popular layout position is already taken
     if (formData.layoutPosition && formData.isPopular) {
       const couponsAtPosition = coupons.filter(
@@ -367,7 +427,7 @@ export default function CouponsPage() {
         await updateCoupon(couponsAtPosition[0].id!, { layoutPosition: null });
       }
     }
-    
+
     // Check if latest layout position is already taken
     if (formData.latestLayoutPosition && formData.isLatest) {
       const couponsAtPosition = coupons.filter(
@@ -381,12 +441,12 @@ export default function CouponsPage() {
         await updateCoupon(couponsAtPosition[0].id!, { latestLayoutPosition: null });
       }
     }
-    
+
     // Only set layoutPosition if coupon is popular
     const layoutPositionToSave = formData.isPopular ? formData.layoutPosition : null;
     // Only set latestLayoutPosition if coupon is latest
     const latestLayoutPositionToSave = formData.isLatest ? formData.latestLayoutPosition : null;
-    
+
     // Prepare coupon data
     const couponData: any = {
       ...formData,
@@ -394,17 +454,17 @@ export default function CouponsPage() {
       layoutPosition: layoutPositionToSave,
       latestLayoutPosition: latestLayoutPositionToSave,
     };
-    
+
     // For deal type, don't include code field
     if (formData.couponType === 'deal') {
       delete couponData.code;
     }
-    
+
     // Always include storeIds (even if empty array) to ensure it's saved
     // Filter out any undefined/null values
     const validStoreIds = selectedStoreIds.filter(id => id && id.trim() !== '');
     couponData.storeIds = validStoreIds.length > 0 ? validStoreIds : [];
-    
+
     // Debug log
     console.log('📝 Creating coupon with data:', {
       storeName: couponData.storeName,
@@ -415,10 +475,10 @@ export default function CouponsPage() {
       logoUploadMethod: logoUploadMethod,
       hasLogoFile: !!logoFile
     });
-    
+
     try {
       let result;
-      
+
       // If logoUrl is set (from Cloudinary upload), use URL method
       // Otherwise, if file is selected, try to upload it
       if (logoUrl && logoUrl.trim() !== '') {
@@ -434,7 +494,7 @@ export default function CouponsPage() {
         console.log('Creating coupon with URL, logoUrl:', logoUrl);
         result = await createCouponFromUrl(couponData as Omit<Coupon, 'id'>, logoUrl || undefined);
       }
-      
+
       if (result.success) {
         alert('Coupon created successfully!');
         fetchCoupons();
@@ -470,11 +530,11 @@ export default function CouponsPage() {
         setLogoUploadMethod('file'); // Reset to file method
       } else {
         // Show error message
-        const errorMessage = result.error instanceof Error 
-          ? result.error.message 
+        const errorMessage = result.error instanceof Error
+          ? result.error.message
           : typeof result.error === 'string'
-          ? result.error
-          : 'Failed to create coupon. Please check console for details.';
+            ? result.error
+            : 'Failed to create coupon. Please check console for details.';
         alert(`Error: ${errorMessage}`);
         console.error('Coupon creation failed:', result.error);
       }
@@ -510,7 +570,7 @@ export default function CouponsPage() {
           description: data.description || formData.description || '',
           url: data.siteUrl || formData.url || '',
         });
-        
+
         if (data.logoUrl) {
           setLogoUrl(data.logoUrl);
           handleLogoUrlChange(data.logoUrl);
@@ -575,7 +635,7 @@ export default function CouponsPage() {
     if (coupon.id) {
       const newLatestStatus = !coupon.isLatest;
       // If removing from latest, also clear layout position
-      const updates: Partial<Coupon> = { 
+      const updates: Partial<Coupon> = {
         isLatest: newLatestStatus,
         ...(newLatestStatus ? {} : { latestLayoutPosition: null })
       };
@@ -588,7 +648,7 @@ export default function CouponsPage() {
     if (coupon.id) {
       const newPopularStatus = !coupon.isPopular;
       // If removing from popular, also clear layout position
-      const updates: Partial<Coupon> = { 
+      const updates: Partial<Coupon> = {
         isPopular: newPopularStatus,
         ...(newPopularStatus ? {} : { layoutPosition: null })
       };
@@ -599,7 +659,7 @@ export default function CouponsPage() {
 
   const handleAssignLatestLayoutPosition = async (coupon: Coupon, position: number | null) => {
     if (!coupon.id) return;
-    
+
     // Check if position is already taken by another coupon
     if (position !== null) {
       const couponsAtPosition = coupons.filter(
@@ -613,14 +673,14 @@ export default function CouponsPage() {
         await updateCoupon(couponsAtPosition[0].id!, { latestLayoutPosition: null });
       }
     }
-    
+
     await updateCoupon(coupon.id, { latestLayoutPosition: position });
     fetchCoupons();
   };
 
   const handleAssignLayoutPosition = async (coupon: Coupon, position: number | null) => {
     if (!coupon.id) return;
-    
+
     // Check if position is already taken by another coupon
     if (position !== null) {
       const couponsAtPosition = coupons.filter(
@@ -634,7 +694,7 @@ export default function CouponsPage() {
         await updateCoupon(couponsAtPosition[0].id!, { layoutPosition: null });
       }
     }
-    
+
     await updateCoupon(coupon.id, { layoutPosition: position });
     fetchCoupons();
   };
@@ -645,12 +705,12 @@ export default function CouponsPage() {
   }, [searchQuery]);
 
   // Filter coupons based on search query
-  const filteredCoupons = searchQuery.trim() === '' 
-    ? coupons 
-    : coupons.filter(coupon => 
-        coupon.storeName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        coupon.code?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const filteredCoupons = searchQuery.trim() === ''
+    ? coupons
+    : coupons.filter(coupon =>
+      coupon.storeName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      coupon.code?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   const totalPages = Math.max(1, Math.ceil(filteredCoupons.length / pageSize));
   const paginatedCoupons = filteredCoupons.slice(
@@ -869,7 +929,7 @@ export default function CouponsPage() {
           <h2 className="text-xl font-bold text-gray-800 mb-4">
             Create New Coupon
           </h2>
-          
+
           {/* URL Extraction Section */}
           <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
             <label htmlFor="couponUrl" className="block text-gray-700 text-sm font-semibold mb-2">
@@ -900,172 +960,28 @@ export default function CouponsPage() {
           </div>
 
           <form onSubmit={handleCreate} className="space-y-4">
-            {/* Add this new section for store selection */}
+            {/* Store IDs Input - Simple Text Field */}
             <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2">
-                Add to Stores (Select one or more existing stores)
+              <label className="block text-gray-900 text-sm font-bold mb-2">
+                Store IDs (comma-separated, e.g., "1,2,3")
               </label>
-              {stores.length > 0 ? (
-                <div className="relative" ref={storeDropdownRef}>
-                  {/* Dropdown Button */}
-                  <button
-                    type="button"
-                    onClick={() => setIsStoreDropdownOpen(!isStoreDropdownOpen)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-between"
-                  >
-                    <span className="text-gray-700">
-                      {selectedStoreIds.length > 0 
-                        ? `${selectedStoreIds.length} store${selectedStoreIds.length > 1 ? 's' : ''} selected`
-                        : 'Select stores...'}
-                    </span>
-                    <svg
-                      className={`w-5 h-5 text-gray-400 transition-transform ${isStoreDropdownOpen ? 'transform rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  {isStoreDropdownOpen && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                      <div className="p-2">
-                        {stores.map((store) => {
-                          const isSelected = selectedStoreIds.includes(store.id || '');
-                          return (
-                            <label
-                              key={store.id}
-                              className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer rounded"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={(e) => {
-                                  if (!store.id) {
-                                    console.warn('⚠️ Store has no ID:', store);
-                                    return;
-                                  }
-                                  
-                                  let newSelected: string[];
-                                  if (e.target.checked) {
-                                    // Only add if not already selected
-                                    if (!selectedStoreIds.includes(store.id)) {
-                                      newSelected = [...selectedStoreIds, store.id];
-                                    } else {
-                                      newSelected = selectedStoreIds;
-                                    }
-                                  } else {
-                                    newSelected = selectedStoreIds.filter(id => id !== store.id);
-                                  }
-                                  
-                                  console.log('🛒 Store selection changed:', {
-                                    storeId: store.id,
-                                    storeName: store.name,
-                                    isChecked: e.target.checked,
-                                    newSelected: newSelected,
-                                    storeLogoUrl: store.logoUrl
-                                  });
-                                  
-                                  setSelectedStoreIds(newSelected);
-                                  
-                                  // Auto-populate storeName from first selected store
-                                  if (newSelected.length > 0) {
-                                    const firstStore = stores.find(s => s.id === newSelected[0]);
-                                    if (firstStore) {
-                                      setFormData({ ...formData, storeName: firstStore.name });
-                                      
-                                      // Auto-set logo from first selected store if it has a logo
-                                      if (firstStore.logoUrl && firstStore.logoUrl.trim() !== '') {
-                                        console.log('✅ Auto-setting logo from store:', firstStore.logoUrl);
-                                        handleLogoUrlChange(firstStore.logoUrl);
-                                        setLogoUploadMethod('url'); // Switch to URL method to show the logo
-                                      }
-                                    }
-                                  } else {
-                                    setFormData({ ...formData, storeName: '' });
-                                    // Only clear logo if it was auto-set from a store (optional - you might want to keep manual logos)
-                                    // For now, we'll keep the logo even if stores are deselected
-                                  }
-                                }}
-                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                              />
-                              <div className="ml-3 flex items-center gap-2 flex-1">
-                                {store.logoUrl && (
-                                  <img 
-                                    src={store.logoUrl} 
-                                    alt={store.name}
-                                    className="w-5 h-5 object-contain rounded flex-shrink-0"
-                                    onError={(e) => {
-                                      (e.target as HTMLImageElement).style.display = 'none';
-                                    }}
-                                  />
-                                )}
-                                <span className="text-sm text-gray-700">{store.name}</span>
-                                {store.logoUrl && (
-                                  <span className="text-xs text-green-600 ml-auto">✓ Logo</span>
-                                )}
-                              </div>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center">
-                  <p className="text-sm text-gray-500">No stores available. Please create stores first.</p>
-                </div>
-              )}
-              
-              {/* Selected Stores Tags */}
-              {selectedStoreIds.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {selectedStoreIds.map((storeId) => {
-                    const store = stores.find(s => s.id === storeId);
-                    return store ? (
-                      <span
-                        key={storeId}
-                        className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs"
-                      >
-                        {store.name}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newSelected = selectedStoreIds.filter(id => id !== storeId);
-                            setSelectedStoreIds(newSelected);
-                            if (newSelected.length > 0) {
-                              const firstStore = stores.find(s => s.id === newSelected[0]);
-                              if (firstStore) {
-                                setFormData({ ...formData, storeName: firstStore.name });
-                                // Auto-set logo from first remaining store if it has a logo
-                                if (firstStore.logoUrl && firstStore.logoUrl.trim() !== '') {
-                                  console.log('✅ Auto-setting logo from remaining store:', firstStore.logoUrl);
-                                  handleLogoUrlChange(firstStore.logoUrl);
-                                  setLogoUploadMethod('url');
-                                }
-                              }
-                            } else {
-                              setFormData({ ...formData, storeName: '' });
-                              // Keep logo even if all stores are deselected (user might have manually set it)
-                            }
-                          }}
-                          className="text-blue-700 hover:text-blue-900 font-bold"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ) : null;
-                  })}
-                </div>
-              )}
+              <input
+                type="text"
+                value={selectedStoreIds.join(',')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Parse comma-separated values and filter out empty strings
+                  const ids = value.split(',').map(id => id.trim()).filter(id => id !== '');
+                  setSelectedStoreIds(ids);
+                  console.log('🛒 Store IDs updated:', ids);
+                }}
+                placeholder="Enter store IDs separated by commas (e.g., 1,2,3)"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
               <p className="mt-1 text-xs text-gray-500">
-                Click to open dropdown and select stores. Store name will auto-populate from first selection.
+                Enter the numeric Store IDs from your stores table (e.g., 1,2,3,4)
               </p>
             </div>
-
             {/* Coupon Type Selection */}
             <div>
               <label className="block text-gray-700 text-sm font-semibold mb-2">
@@ -1226,7 +1142,7 @@ export default function CouponsPage() {
                   URL (Cloudinary)
                 </label>
               </div>
-              
+
               {logoUploadMethod === 'file' ? (
                 <>
                   <label htmlFor="logo" className="sr-only">Logo (PNG / SVG)</label>
@@ -1238,11 +1154,11 @@ export default function CouponsPage() {
                     onChange={async (e) => {
                       const file = e.target.files?.[0] ?? null;
                       setLogoFile(file);
-                      
+
                       if (file) {
                         // Show preview immediately
                         setLogoPreview(URL.createObjectURL(file));
-                        
+
                         // Automatically upload to Cloudinary
                         setUploadingToCloudinary(true);
                         try {
@@ -1276,10 +1192,10 @@ export default function CouponsPage() {
                             const cloudinaryUrl = uploadData.logoUrl;
                             setLogoUrl(cloudinaryUrl);
                             setExtractedLogoUrl(cloudinaryUrl);
-                            
+
                             // Switch to URL method to show the uploaded URL
                             setLogoUploadMethod('url');
-                            
+
                             console.log('✅ Logo uploaded to Cloudinary:', cloudinaryUrl);
                             console.log('📋 Cloudinary URL saved to state:', cloudinaryUrl);
                             alert('✅ Logo uploaded to Cloudinary successfully! URL has been copied.');
@@ -1332,7 +1248,7 @@ export default function CouponsPage() {
                   )}
                 </>
               )}
-              
+
               {/* Show Cloudinary URL if uploaded */}
               {logoUrl && logoUploadMethod === 'url' && (
                 <div className="mt-2 p-2 bg-green-50 rounded text-sm text-green-700">
@@ -1340,7 +1256,7 @@ export default function CouponsPage() {
                   <div className="mt-1 break-all text-xs">{logoUrl}</div>
                 </div>
               )}
-              
+
               {logoPreview && (
                 <div className="mt-2">
                   <img src={logoPreview} alt="Logo preview" className="h-16 object-contain" />
@@ -1453,8 +1369,8 @@ export default function CouponsPage() {
                   checked={formData.isLatest || false}
                   onChange={(e) => {
                     const isLatest = e.target.checked;
-                    setFormData({ 
-                      ...formData, 
+                    setFormData({
+                      ...formData,
                       isLatest,
                       // Clear layout position if latest is disabled
                       latestLayoutPosition: isLatest ? formData.latestLayoutPosition : null
@@ -1473,8 +1389,8 @@ export default function CouponsPage() {
                   checked={formData.isPopular || false}
                   onChange={(e) => {
                     const isPopular = e.target.checked;
-                    setFormData({ 
-                      ...formData, 
+                    setFormData({
+                      ...formData,
                       isPopular,
                       // Clear layout position if popular is disabled
                       layoutPosition: isPopular ? formData.layoutPosition : null
@@ -1497,8 +1413,8 @@ export default function CouponsPage() {
                   value={formData.latestLayoutPosition || ''}
                   onChange={(e) => {
                     const position = e.target.value ? parseInt(e.target.value) : null;
-                    setFormData({ 
-                      ...formData, 
+                    setFormData({
+                      ...formData,
                       latestLayoutPosition: position,
                       // Auto-enable latest if layout position is assigned
                       isLatest: position !== null ? true : formData.isLatest
@@ -1542,8 +1458,8 @@ export default function CouponsPage() {
                   value={formData.layoutPosition || ''}
                   onChange={(e) => {
                     const position = e.target.value ? parseInt(e.target.value) : null;
-                    setFormData({ 
-                      ...formData, 
+                    setFormData({
+                      ...formData,
                       layoutPosition: position,
                       // Auto-enable popular if layout position is assigned
                       isPopular: position !== null ? true : formData.isPopular
@@ -1671,11 +1587,10 @@ export default function CouponsPage() {
                     <td className="px-4 sm:px-6 py-4">
                       <button
                         onClick={() => handleToggleActive(coupon)}
-                        className={`px-2 py-1 rounded text-xs font-semibold cursor-pointer whitespace-nowrap ${
-                          coupon.isActive
-                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                        className={`px-2 py-1 rounded text-xs font-semibold cursor-pointer whitespace-nowrap ${coupon.isActive
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
                       >
                         {coupon.isActive ? 'Active' : 'Inactive'}
                       </button>
@@ -1683,11 +1598,10 @@ export default function CouponsPage() {
                     <td className="px-4 sm:px-6 py-4">
                       <button
                         onClick={() => handleToggleLatest(coupon)}
-                        className={`px-2 py-1 rounded text-xs font-semibold cursor-pointer whitespace-nowrap ${
-                          coupon.isLatest
-                            ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                        className={`px-2 py-1 rounded text-xs font-semibold cursor-pointer whitespace-nowrap ${coupon.isLatest
+                          ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
                       >
                         {coupon.isLatest ? 'Latest' : 'Not Latest'}
                       </button>
@@ -1716,11 +1630,10 @@ export default function CouponsPage() {
                     <td className="px-4 sm:px-6 py-4">
                       <button
                         onClick={() => handleTogglePopular(coupon)}
-                        className={`px-2 py-1 rounded text-xs font-semibold cursor-pointer whitespace-nowrap ${
-                          coupon.isPopular
-                            ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                        className={`px-2 py-1 rounded text-xs font-semibold cursor-pointer whitespace-nowrap ${coupon.isPopular
+                          ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
                       >
                         {coupon.isPopular ? 'Popular' : 'Not Popular'}
                       </button>

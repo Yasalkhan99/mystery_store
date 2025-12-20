@@ -10,6 +10,9 @@ interface SupabaseStoreRow {
   seoDescription?: string | null;
   slug?: string | null;
   subStoreName?: string | null;
+  merchant_id?: string | null;
+  network_id?: string | null;
+  tracking_link?: string | null;
 }
 
 export async function GET() {
@@ -29,21 +32,25 @@ export async function GET() {
       );
     }
 
-    const rows = (data || []) as SupabaseStoreRow[];
+    const rows = (data || []) as any[];
 
     const stores = rows.map((row) => ({
-      id: row.store_id?.toString(),
-      name: row.store_name,
-      subStoreName: row.subStoreName || undefined,
+      id: row.store_id?.toString() || row.id?.toString(),
+      storeId: row.store_id ? (typeof row.store_id === 'number' ? row.store_id : parseInt(row.store_id, 10)) : undefined,
+      name: row.store_name || row.name || '',
+      subStoreName: row.subStoreName || row.sub_store_name || undefined,
       slug: row.slug || undefined,
       description: row.description || '',
-      logoUrl: row.store_logo_url || undefined,
-      seoTitle: row.seoTitle || undefined,
-      seoDescription: row.seoDescription || undefined,
-      isTrending: row.isTrending ?? false,
-      layoutPosition: null,
-      categoryId: null,
-      createdAt: undefined,
+      logoUrl: row.store_logo_url || row.logo_url || undefined,
+      seoTitle: row.seoTitle || row.seo_title || undefined,
+      seoDescription: row.seoDescription || row.seo_description || undefined,
+      isTrending: row.isTrending ?? row.featured ?? false,
+      layoutPosition: row.layout_position || null,
+      categoryId: row.category_id || null,
+      merchantId: row.merchant_id || undefined,
+      networkId: row.network_id || undefined,
+      trackingLink: row.tracking_link || undefined,
+      createdAt: row.created_at || undefined,
     }));
 
     return new Response(

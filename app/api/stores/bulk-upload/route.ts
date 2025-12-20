@@ -1,14 +1,20 @@
 import { supabaseServer } from '@/lib/supabase/server';
 
 interface SupabaseStoreRow {
-  store_name: string;
+  name: string;
   description: string;
-  store_logo_url?: string | null;
-  isTrending?: boolean | null;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
+  logo_url?: string | null;
+  website_url?: string | null;
+  tracking_link?: string | null;
+  merchant_id?: string | null;
+  network_id?: string | null;
+  country?: string | null;
+  status?: string | null;
+  featured?: boolean | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
   slug?: string | null;
-  subStoreName?: string | null;
+  sub_store_name?: string | null;
 }
 
 export async function POST(req: Request) {
@@ -25,12 +31,17 @@ export async function POST(req: Request) {
 
     const supabase = supabaseServer();
 
+    // Use upsert to handle duplicates - update if slug exists, insert if new
     const { error, count } = await supabase
       .from('stores')
-      .insert(rows as SupabaseStoreRow[], { count: 'exact' });
+      .upsert(rows as SupabaseStoreRow[], {
+        onConflict: 'slug',
+        count: 'exact',
+        ignoreDuplicates: false // Update existing records
+      });
 
     if (error) {
-      console.error('Supabase bulk insert error:', error);
+      console.error('Supabase bulk upsert error:', error);
       return new Response(
         JSON.stringify({ success: false, error: error.message }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }

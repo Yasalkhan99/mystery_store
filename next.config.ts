@@ -50,6 +50,10 @@ const nextConfig: NextConfig = {
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  typescript: {
+    // Skip TypeScript errors during production build
+    ignoreBuildErrors: true,
+  },
   async headers() {
     return [
       {

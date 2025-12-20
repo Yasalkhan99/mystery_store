@@ -10,6 +10,9 @@ interface SupabaseStoreRow {
   seoDescription?: string | null;
   slug?: string | null;
   subStoreName?: string | null;
+  merchant_id?: string | null;
+  network_id?: string | null;
+  tracking_link?: string | null;
 }
 
 export async function GET(
@@ -68,21 +71,22 @@ export async function GET(
       );
     }
 
-    const row = data as SupabaseStoreRow;
+    const row = data as any;
 
     const store = {
-      id: row.store_id?.toString(),
-      name: row.store_name,
-      subStoreName: row.subStoreName || undefined,
+      id: row.store_id?.toString() || row.id?.toString(),
+      storeId: row.store_id ? (typeof row.store_id === 'number' ? row.store_id : parseInt(row.store_id, 10)) : undefined,
+      name: row.store_name || row.name || '',
+      subStoreName: row.subStoreName || row.sub_store_name || undefined,
       slug: row.slug || undefined,
       description: row.description || '',
-      logoUrl: row.store_logo_url || undefined,
-      seoTitle: row.seoTitle || undefined,
-      seoDescription: row.seoDescription || undefined,
-      isTrending: row.isTrending ?? false,
-      layoutPosition: null,
-      categoryId: null,
-      createdAt: undefined,
+      logoUrl: row.store_logo_url || row.logo_url || undefined,
+      seoTitle: row.seoTitle || row.seo_title || undefined,
+      seoDescription: row.seoDescription || row.seo_description || undefined,
+      isTrending: row.isTrending ?? row.featured ?? false,
+      layoutPosition: row.layout_position || null,
+      categoryId: row.category_id || null,
+      createdAt: row.created_at || undefined,
     };
 
     return new Response(
@@ -126,6 +130,9 @@ export async function PATCH(
     if (body.seoTitle !== undefined) updates.seoTitle = body.seoTitle;
     if (body.seoDescription !== undefined) updates.seoDescription = body.seoDescription;
     if (body.isTrending !== undefined) updates.isTrending = body.isTrending;
+    if (body.merchant_id !== undefined) updates.merchant_id = body.merchant_id;
+    if (body.network_id !== undefined) updates.network_id = body.network_id;
+    if (body.tracking_link !== undefined) updates.tracking_link = body.tracking_link;
 
     // Make sure something is being updated
     if (Object.keys(updates).length === 0) {
@@ -217,20 +224,21 @@ export async function PATCH(
     }
 
     // Reformat output the same as GET
-    const row = data as SupabaseStoreRow;
+    const row = data as any;
     const store = {
-      id: row.store_id?.toString(),
-      name: row.store_name,
-      subStoreName: row.subStoreName || undefined,
+      id: row.store_id?.toString() || row.id?.toString(),
+      storeId: row.store_id ? (typeof row.store_id === 'number' ? row.store_id : parseInt(row.store_id, 10)) : undefined,
+      name: row.store_name || row.name || '',
+      subStoreName: row.subStoreName || row.sub_store_name || undefined,
       slug: row.slug || undefined,
       description: row.description || '',
-      logoUrl: row.store_logo_url || undefined,
-      seoTitle: row.seoTitle || undefined,
-      seoDescription: row.seoDescription || undefined,
-      isTrending: row.isTrending ?? false,
-      layoutPosition: null,
-      categoryId: null,
-      createdAt: undefined,
+      logoUrl: row.store_logo_url || row.logo_url || undefined,
+      seoTitle: row.seoTitle || row.seo_title || undefined,
+      seoDescription: row.seoDescription || row.seo_description || undefined,
+      isTrending: row.isTrending ?? row.featured ?? false,
+      layoutPosition: row.layout_position || null,
+      categoryId: row.category_id || null,
+      createdAt: row.created_at || undefined,
     };
 
     return new Response(

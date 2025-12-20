@@ -52,13 +52,13 @@ export default function EditStorePage() {
       setSlugError('Slug is required');
       return false;
     }
-    
+
     // Check slug format (only lowercase letters, numbers, and hyphens)
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setSlugError('Slug can only contain lowercase letters, numbers, and hyphens');
       return false;
     }
-    
+
     // Skip Firebase uniqueness check if it's a Supabase store (for now)
     // Ideally, we should check uniqueness against both DBs
     if (isSupabaseStore) {
@@ -71,7 +71,7 @@ export default function EditStorePage() {
       setSlugError('This slug is already taken. Please use a different one.');
       return false;
     }
-    
+
     setSlugError('');
     return true;
   };
@@ -136,20 +136,20 @@ export default function EditStorePage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    
+
     // Validate slug
     if (!formData.slug || formData.slug.trim() === '') {
       alert('Please enter a slug for the store');
       setSaving(false);
       return;
     }
-    
+
     const slugValid = await validateSlug(formData.slug);
     if (!slugValid) {
       setSaving(false);
       return;
     }
-    
+
     // Use Cloudinary URL directly if it's valid, only extract if malformed
     let logoUrlToSave: string | undefined = undefined;
     if (logoUrl && logoUrl.trim() !== '') {
@@ -173,7 +173,7 @@ export default function EditStorePage() {
       ...formData,
       ...(logoUrlToSave ? { logoUrl: logoUrlToSave } : {}),
     };
-    
+
     if (isSupabaseStore) {
       // Update via Supabase PATCH API
       try {
@@ -186,6 +186,9 @@ export default function EditStorePage() {
           seoTitle: updates.seoTitle,
           seoDescription: updates.seoDescription,
           isTrending: updates.isTrending,
+          merchant_id: updates.merchantId,
+          network_id: updates.networkId,
+          tracking_link: updates.trackingLink,
         };
 
         const res = await fetch(`/api/stores/supabase/by-id/${encodeURIComponent(storeId)}`, {
@@ -227,7 +230,7 @@ export default function EditStorePage() {
   //         method: 'DELETE',
   //       });
   //       const data = await res.json();
-        
+
   //       if (res.ok && data.success) {
   //         router.push('/admin/stores');
   //       } else {
@@ -276,7 +279,7 @@ export default function EditStorePage() {
         >
           ← Back
         </button>
-       
+
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -295,8 +298,8 @@ export default function EditStorePage() {
                 value={formData.name || ''}
                 onChange={(e) => {
                   const name = e.target.value;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     name,
                     // Auto-generate slug from name only if auto-generate is enabled
                     slug: autoGenerateSlug ? generateSlug(name) : formData.slug
@@ -325,6 +328,61 @@ export default function EditStorePage() {
                 This name will be displayed on the store page when visiting the store
               </p>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="merchantId" className="block text-sm font-semibold text-gray-700 mb-1">
+                Merchant ID
+              </label>
+              <input
+                id="merchantId"
+                name="merchantId"
+                type="text"
+                placeholder="Merchant ID (e.g., 266908)"
+                value={formData.merchantId || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, merchantId: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="networkId" className="block text-sm font-semibold text-gray-700 mb-1">
+                Network ID
+              </label>
+              <input
+                id="networkId"
+                name="networkId"
+                type="text"
+                placeholder="Network ID (e.g., 2)"
+                value={formData.networkId || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, networkId: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="trackingLink" className="block text-sm font-semibold text-gray-700 mb-1">
+              Tracking Link (Affiliate URL)
+            </label>
+            <input
+              id="trackingLink"
+              name="trackingLink"
+              type="url"
+              placeholder="https://example.com/track?id=123"
+              value={formData.trackingLink || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, trackingLink: e.target.value })
+              }
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Affiliate tracking URL for this store
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -359,7 +417,7 @@ export default function EditStorePage() {
                 onChange={async (e) => {
                   // If auto-generate is enabled, don't allow manual editing
                   if (autoGenerateSlug) return;
-                  
+
                   const slug = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
                   setFormData({ ...formData, slug });
                   if (slug) {
@@ -369,9 +427,8 @@ export default function EditStorePage() {
                   }
                 }}
                 disabled={autoGenerateSlug}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  slugError ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                } ${autoGenerateSlug ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${slugError ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  } ${autoGenerateSlug ? 'bg-gray-50 cursor-not-allowed' : ''}`}
                 required
               />
               {slugError && (
@@ -509,7 +566,7 @@ export default function EditStorePage() {
                 URL (Cloudinary)
               </label>
             </div>
-            
+
             {logoUploadMethod === 'file' ? (
               <>
                 <label htmlFor="logo" className="sr-only">Logo (PNG / SVG / JPG)</label>
@@ -521,11 +578,11 @@ export default function EditStorePage() {
                   onChange={async (e) => {
                     const file = e.target.files?.[0] ?? null;
                     setLogoFile(file);
-                    
+
                     if (file) {
                       // Show preview immediately
                       setLogoPreview(URL.createObjectURL(file));
-                      
+
                       // Automatically upload to Cloudinary
                       setUploadingToCloudinary(true);
                       try {
@@ -559,10 +616,10 @@ export default function EditStorePage() {
                           const cloudinaryUrl = uploadData.logoUrl;
                           setLogoUrl(cloudinaryUrl);
                           setExtractedLogoUrl(cloudinaryUrl);
-                          
+
                           // Switch to URL method to show the uploaded URL
                           setLogoUploadMethod('url');
-                          
+
                           console.log('✅ Logo uploaded to Cloudinary:', cloudinaryUrl);
                           alert('✅ Logo uploaded to Cloudinary successfully! URL has been set.');
                         } else {
@@ -614,7 +671,7 @@ export default function EditStorePage() {
                 )}
               </>
             )}
-            
+
             {/* Show Cloudinary URL if uploaded */}
             {logoUrl && logoUploadMethod === 'url' && (
               <div className="mt-2 p-2 bg-green-50 rounded text-sm text-green-700">
@@ -622,13 +679,13 @@ export default function EditStorePage() {
                 <div className="mt-1 break-all text-xs">{logoUrl}</div>
               </div>
             )}
-            
+
             {/* Logo Preview */}
             {(logoPreview || logoUrl) && (
               <div className="mt-2">
-                <img 
-                  src={logoPreview || (extractedLogoUrl || logoUrl)} 
-                  alt="Logo preview" 
+                <img
+                  src={logoPreview || (extractedLogoUrl || logoUrl)}
+                  alt="Logo preview"
                   className="h-16 object-contain"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none';
@@ -647,8 +704,8 @@ export default function EditStorePage() {
                 checked={formData.isTrending || false}
                 onChange={(e) => {
                   const isTrending = e.target.checked;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     isTrending,
                     // Clear layout position if trending is disabled
                     layoutPosition: isTrending ? formData.layoutPosition : null
@@ -671,8 +728,8 @@ export default function EditStorePage() {
                 value={formData.layoutPosition || ''}
                 onChange={(e) => {
                   const position = e.target.value ? parseInt(e.target.value) : null;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     layoutPosition: position,
                     // Auto-enable trending if layout position is assigned
                     isTrending: position !== null ? true : formData.isTrending
