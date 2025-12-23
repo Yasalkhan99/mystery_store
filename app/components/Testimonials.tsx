@@ -85,112 +85,225 @@ export default function Testimonials() {
 
     const currentTestimonial = testimonials[currentIndex];
 
-    // Calculate positions for avatar circle - matching reference image
-    const getAvatarPosition = (index: number) => {
-        const totalAvatars = testimonials.length;
-        const angle = (index * 360) / totalAvatars - 90; // Start from top
-        const radius = 220; // Distance from center
-        const x = Math.cos((angle * Math.PI) / 180) * radius;
-        const y = Math.sin((angle * Math.PI) / 180) * radius;
-        return { x, y };
+    // Get visible testimonials (current and adjacent)
+    const getVisibleTestimonials = () => {
+        const prev = (currentIndex - 1 + testimonials.length) % testimonials.length;
+        const next = (currentIndex + 1) % testimonials.length;
+        return [prev, currentIndex, next];
     };
 
     return (
-        <section className="py-16 bg-gradient-to-br from-[#fafafa] to-[#f5f5f5] relative overflow-hidden">
+        <section className="py-20 bg-gradient-to-br from-green-50 via-white to-emerald-50 relative overflow-hidden">
+            {/* Decorative Background Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-[#0B453C]/10 to-[#0f5c4e]/5 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-emerald-400/10 to-green-300/5 rounded-full blur-3xl"></div>
+            </div>
+
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                {/* Section Header */}
+                <div className="text-center mb-16">
+                    <motion.h2
+                        className="text-4xl md:text-5xl font-bold mb-4"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <span className="bg-gradient-to-r from-[#0B453C] to-[#0f5c4e] bg-clip-text text-transparent">
+                            What Our Users Say
+                        </span>
+                    </motion.h2>
+                    <motion.p
+                        className="text-gray-600 text-lg max-w-2xl mx-auto"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                    >
+                        Join thousands of happy customers saving money every day
+                    </motion.p>
+                </div>
+
+                {/* Testimonials Carousel */}
                 <div className="relative">
-                    {/* Avatar Circle Container */}
-                    <div className="relative h-[450px] flex items-center justify-center">
-                        {/* Avatars positioned in circle */}
-                        {testimonials.map((testimonial, index) => {
-                            const { x, y } = getAvatarPosition(index);
-                            const isActive = index === currentIndex;
+                    {/* Desktop: 3-Card Carousel */}
+                    <div className="hidden md:block">
+                        <div className="relative h-[400px] flex items-center justify-center">
+                            <div className="flex items-center gap-6 justify-center w-full max-w-6xl mx-auto px-16">
+                                {getVisibleTestimonials().map((testimonialIndex, position) => {
+                                    const testimonial = testimonials[testimonialIndex];
+                                    const isCenter = position === 1;
 
-                            return (
-                                <motion.button
-                                    key={testimonial.id}
-                                    onClick={() => setCurrentIndex(index)}
-                                    className={`absolute w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 border-2 ${isActive
-                                        ? 'bg-[#CD3D1C] border-[#CD3D1C] scale-110 shadow-lg'
-                                        : 'bg-gray-100 border-gray-200 hover:border-gray-300 hover:scale-105'
-                                        }`}
-                                    style={{
-                                        left: `calc(50% + ${x}px)`,
-                                        top: `calc(50% + ${y}px)`,
-                                        transform: 'translate(-50%, -50%)'
-                                    }}
-                                    animate={{
-                                        scale: isActive ? 1.1 : 1,
-                                    }}
+                                    return (
+                                        <motion.div
+                                            key={testimonial.id}
+                                            className={`relative ${isCenter ? 'w-[420px]' : 'w-[340px]'}`}
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{
+                                                opacity: isCenter ? 1 : 0.6,
+                                                scale: isCenter ? 1 : 0.9,
+                                                y: isCenter ? 0 : 20
+                                            }}
+                                            transition={{ duration: 0.5 }}
+                                        >
+                                            {/* Card */}
+                                            <div className={`relative bg-white rounded-2xl p-8 shadow-xl transition-all duration-500 border border-gray-100 ${isCenter ? 'shadow-2xl' : 'shadow-lg'
+                                                }`}>
+                                                {/* Gradient Overlay */}
+                                                <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-emerald-50/30 rounded-2xl pointer-events-none"></div>
+
+                                                {/* Quote Icon */}
+                                                <div className="relative mb-4">
+                                                    <div className="w-14 h-14 bg-gradient-to-br from-[#0B453C] to-[#0f5c4e] rounded-xl flex items-center justify-center shadow-lg">
+                                                        <Quote className="w-7 h-7 text-white" strokeWidth={2} />
+                                                    </div>
+                                                </div>
+
+                                                {/* Rating */}
+                                                <div className="flex gap-1 mb-4 relative">
+                                                    {[...Array(testimonial.rating)].map((_, i) => (
+                                                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                                                    ))}
+                                                </div>
+
+                                                {/* Testimonial Text */}
+                                                <p className="text-gray-700 text-base leading-relaxed mb-6 relative min-h-[120px]">
+                                                    "{testimonial.text}"
+                                                </p>
+
+                                                {/* Author */}
+                                                <div className="flex items-center gap-4 relative">
+                                                    <div className="w-14 h-14 bg-gradient-to-br from-[#0B453C] to-[#0f5c4e] rounded-full flex items-center justify-center text-2xl shadow-md">
+                                                        {testimonial.avatar}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-bold text-gray-900 text-lg">
+                                                            {testimonial.name}
+                                                        </h4>
+                                                        <p className="text-gray-600 text-sm">
+                                                            {testimonial.role}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Decorative Corner */}
+                                                {isCenter && (
+                                                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#0B453C]/10 to-transparent rounded-bl-full rounded-tr-2xl"></div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Navigation Buttons */}
+                            <button
+                                onClick={prevTestimonial}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-[#0B453C] group z-20"
+                                aria-label="Previous testimonial"
+                            >
+                                <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-[#0B453C] transition-colors" />
+                            </button>
+
+                            <button
+                                onClick={nextTestimonial}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-br from-[#0B453C] to-[#0f5c4e] rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 z-20"
+                                aria-label="Next testimonial"
+                            >
+                                <ChevronRight className="w-6 h-6 text-white" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile: Single Card */}
+                    <div className="md:hidden">
+                        <div className="relative h-[450px] flex items-center justify-center px-4">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={currentIndex}
+                                    initial={{ opacity: 0, x: 100 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -100 }}
                                     transition={{ duration: 0.3 }}
+                                    className="w-full max-w-md"
                                 >
-                                    {testimonial.avatar}
-                                </motion.button>
-                            );
-                        })}
+                                    {/* Card */}
+                                    <div className="relative bg-white rounded-2xl p-6 shadow-2xl border border-gray-100">
+                                        {/* Gradient Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-emerald-50/30 rounded-2xl pointer-events-none"></div>
 
-                        {/* Center Content */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="max-w-xl mx-auto text-center px-8">
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={currentIndex}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
                                         {/* Quote Icon */}
-                                        <div className="flex justify-center mb-4">
-                                            <Quote className="w-16 h-16 text-gray-300" strokeWidth={1.5} />
+                                        <div className="relative mb-4">
+                                            <div className="w-12 h-12 bg-gradient-to-br from-[#0B453C] to-[#0f5c4e] rounded-xl flex items-center justify-center shadow-lg">
+                                                <Quote className="w-6 h-6 text-white" strokeWidth={2} />
+                                            </div>
                                         </div>
 
-                                        {/* Star Rating */}
-                                        <div className="flex justify-center gap-1 mb-4">
+                                        {/* Rating */}
+                                        <div className="flex gap-1 mb-4 relative">
                                             {[...Array(currentTestimonial.rating)].map((_, i) => (
-                                                <Star key={i} className="w-5 h-5 fill-[#FFA500] text-[#FFA500]" />
+                                                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                                             ))}
                                         </div>
 
                                         {/* Testimonial Text */}
-                                        <p className="text-gray-700 text-base mb-6 leading-relaxed max-w-lg mx-auto">
+                                        <p className="text-gray-700 text-base leading-relaxed mb-6 relative">
                                             "{currentTestimonial.text}"
                                         </p>
 
-                                        {/* Author Info */}
-                                        <div className="flex flex-col items-center">
-                                            <div className="w-16 h-16 bg-[#CD3D1C] rounded-full flex items-center justify-center text-3xl mb-3 shadow-md">
+                                        {/* Author */}
+                                        <div className="flex items-center gap-4 relative">
+                                            <div className="w-14 h-14 bg-gradient-to-br from-[#0B453C] to-[#0f5c4e] rounded-full flex items-center justify-center text-2xl shadow-md">
                                                 {currentTestimonial.avatar}
                                             </div>
-                                            <h4 className="text-lg font-bold text-gray-900">
-                                                {currentTestimonial.name}
-                                            </h4>
-                                            <p className="text-gray-600 text-sm">
-                                                {currentTestimonial.role}
-                                            </p>
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 text-lg">
+                                                    {currentTestimonial.name}
+                                                </h4>
+                                                <p className="text-gray-600 text-sm">
+                                                    {currentTestimonial.role}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </motion.div>
-                                </AnimatePresence>
-                            </div>
+
+                                        {/* Decorative Corner */}
+                                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#0B453C]/10 to-transparent rounded-bl-full rounded-tr-2xl"></div>
+                                    </div>
+                                </motion.div>
+                            </AnimatePresence>
+
+                            {/* Navigation Buttons */}
+                            <button
+                                onClick={prevTestimonial}
+                                className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 border border-gray-200 z-20"
+                                aria-label="Previous testimonial"
+                            >
+                                <ChevronLeft className="w-5 h-5 text-gray-600" />
+                            </button>
+
+                            <button
+                                onClick={nextTestimonial}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-br from-[#0B453C] to-[#0f5c4e] rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 z-20"
+                                aria-label="Next testimonial"
+                            >
+                                <ChevronRight className="w-5 h-5 text-white" />
+                            </button>
                         </div>
                     </div>
 
-                    {/* Navigation Arrows */}
-                    <button
-                        onClick={prevTestimonial}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition border border-gray-200 z-20"
-                        aria-label="Previous testimonial"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-gray-600" />
-                    </button>
-
-                    <button
-                        onClick={nextTestimonial}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#CD3D1C] rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-20"
-                        aria-label="Next testimonial"
-                    >
-                        <ChevronRight className="w-5 h-5 text-white" />
-                    </button>
+                    {/* Dots Indicator */}
+                    <div className="flex justify-center gap-2 mt-8">
+                        {testimonials.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setCurrentIndex(index)}
+                                className={`transition-all duration-300 rounded-full ${index === currentIndex
+                                        ? 'w-8 h-2 bg-gradient-to-r from-[#0B453C] to-[#0f5c4e]'
+                                        : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+                                    }`}
+                                aria-label={`Go to testimonial ${index + 1}`}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>

@@ -12,9 +12,9 @@ export default function NewsletterSubscription() {
       alert('Please enter your email address');
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Save subscription to Firestore and send email via Resend (API route handles both)
       const response = await fetch('/api/newsletter/subscribe', {
@@ -43,12 +43,11 @@ export default function NewsletterSubscription() {
 
   return (
     <div className="w-full bg-white pt-4 sm:pt-6 md:pt-8 lg:pt-12 pb-3 sm:pb-4 md:pb-6 lg:pb-8 relative animate-fade-in-up">
-      <div 
-        className="relative w-full"
-        style={{ 
+      <div
+        className="relative w-full bg-gradient-to-r from-[#0B453C] to-[#0f5c4e]"
+        style={{
           minHeight: '140px',
           height: 'auto',
-          background: 'linear-gradient(135deg, rgba(255, 148, 61, 0.2) 0%, rgba(244, 117, 79, 0.15) 100%)'
         }}
       >
         {/* Decorative Background Elements */}
@@ -57,14 +56,14 @@ export default function NewsletterSubscription() {
           <div className="hidden sm:block absolute top-3 left-4 sm:left-8 w-2 sm:w-3 h-2 sm:h-3 bg-yellow-400 rounded-full opacity-60"></div>
           <div className="hidden sm:block absolute top-6 left-12 sm:left-20 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-yellow-400 rounded-full opacity-50"></div>
           <div className="hidden md:block absolute top-4 right-16 sm:right-32 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-yellow-400 rounded-full opacity-60"></div>
-          
+
           {/* Decorative arcs and dots pattern - hidden on mobile */}
           <div className="hidden md:block absolute top-0 right-0 w-32 md:w-48 h-full opacity-20">
             <div className="w-full h-full relative">
               {/* Concentric arcs */}
               <svg className="absolute top-3 right-4 md:right-8" width="40" height="40" viewBox="0 0 50 50">
-                <path d="M7,25 Q25,7 43,25" stroke="#ff6b35" strokeWidth="1.5" fill="none" opacity="0.6"/>
-                <path d="M9,25 Q25,9 41,25" stroke="#ff6b35" strokeWidth="1.5" fill="none" opacity="0.4"/>
+                <path d="M7,25 Q25,7 43,25" stroke="#ff6b35" strokeWidth="1.5" fill="none" opacity="0.6" />
+                <path d="M9,25 Q25,9 41,25" stroke="#ff6b35" strokeWidth="1.5" fill="none" opacity="0.4" />
               </svg>
               {/* Grid of dots */}
               <div className="absolute top-8 md:top-10 right-6 md:right-10 grid grid-cols-3 md:grid-cols-4 gap-1">
@@ -79,29 +78,10 @@ export default function NewsletterSubscription() {
         <div className="w-full min-h-[140px] px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-4 sm:py-6 md:py-8 relative z-10 flex flex-col md:flex-row items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8">
           {/* Text Content - Mobile: centered, Desktop: left aligned */}
           <div className="flex flex-col justify-center text-center md:text-left animate-slide-in-left w-full md:w-auto">
-            <h2 
-              className="mb-0.5 sm:mb-1"
-              style={{
-                fontFamily: 'var(--font-barlow), sans-serif',
-                fontWeight: 700,
-                fontSize: 'clamp(16px, 4vw, 22px)',
-                lineHeight: '1.3',
-                color: '#303030',
-                textTransform: 'none',
-              }}
-            >
-              Subscribe Our Newsletter To Get The Best
+            <h2 className="text-3xl md:text-4xl font-bold mb-2">
+              <span className="text-white">Subscribe Our Newsletter To Get The Best</span>
             </h2>
-            <p 
-              style={{
-                fontFamily: 'var(--font-barlow), sans-serif',
-                fontWeight: 700,
-                fontSize: 'clamp(16px, 4vw, 22px)',
-                lineHeight: '1.3',
-                color: '#303030',
-                textTransform: 'none',
-              }}
-            >
+            <p className="text-lg md:text-xl text-white/90">
               Deals Right In Your Email
             </p>
           </div>
@@ -132,7 +112,7 @@ export default function NewsletterSubscription() {
         </div>
 
         {/* Left Side Illustration - Golden Bell (Half above, half inside) - Behind text */}
-        <div 
+        <div
           className="hidden lg:block absolute left-8 pointer-events-none"
           style={{
             top: '50%',
@@ -150,7 +130,7 @@ export default function NewsletterSubscription() {
         </div>
 
         {/* Right Side Illustration - Documents and Envelope (Half above, half inside) */}
-        <div 
+        <div
           className="hidden lg:block absolute right-8 pointer-events-none"
           style={{
             top: '50%',

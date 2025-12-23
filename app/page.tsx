@@ -39,10 +39,10 @@ export default async function Home() {
       <TrustedPartners />
       {/* Recent News & Articles Section */}
       <RecentNews />
-      {/* Newsletter Subscription Section */}
-      <Newsletter />
       {/* Testimonials Section */}
       <Testimonials />
+      {/* Newsletter Subscription Section */}
+      <Newsletter />
       {/* Footer Section */}
       <Footer />
     </div>

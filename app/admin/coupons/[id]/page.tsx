@@ -268,6 +268,13 @@ export default function EditCouponPage() {
                                   const firstStore = stores.find(s => s.id === newSelected[0]);
                                   if (firstStore) {
                                     setFormData({ ...formData, storeName: firstStore.name });
+
+                                    // Auto-fetch logo from first selected store
+                                    if (newSelected.length === 1 && firstStore.logoUrl) {
+                                      setLogoUrl(firstStore.logoUrl);
+                                      handleLogoUrlChange(firstStore.logoUrl);
+                                      console.log('✅ Auto-populated logo from store:', firstStore.name, firstStore.logoUrl);
+                                    }
                                   }
                                 } else {
                                   setFormData({ ...formData, storeName: '' });

@@ -32,6 +32,7 @@ export default function StoresPage() {
     merchantId: '',
     networkId: '',
     trackingLink: '',
+    country: 'US',
   });
   const [slugError, setSlugError] = useState<string>('');
   const [autoGenerateSlug, setAutoGenerateSlug] = useState<boolean>(true);
@@ -526,6 +527,7 @@ export default function StoresPage() {
       merchantId: formData.merchantId || undefined,
       networkId: formData.networkId || undefined,
       trackingLink: formData.trackingLink || undefined,
+      country: formData.country || 'US',
     };
 
     const result = await createStore(storeData);
@@ -547,6 +549,7 @@ export default function StoresPage() {
         merchantId: '',
         networkId: '',
         trackingLink: '',
+        country: 'US',
       });
       setSlugError('');
       setAutoGenerateSlug(true);
@@ -992,6 +995,27 @@ export default function StoresPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="country" className="block text-gray-700 text-sm font-semibold mb-2">
+                Country
+              </label>
+              <input
+                id="country"
+                name="country"
+                type="text"
+                placeholder="Country (e.g., US, UK, DE)"
+                value={formData.country || 'US'}
+                onChange={(e) =>
+                  setFormData({ ...formData, country: e.target.value.toUpperCase() })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                maxLength={2}
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                2-letter country code (e.g., US for United States, UK for United Kingdom, DE for Germany)
+              </p>
             </div>
 
             <div>

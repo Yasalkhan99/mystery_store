@@ -71,6 +71,7 @@ export async function createCoupon(coupon: Omit<Coupon, 'id'>, logoFile?: File) 
 
     const couponData = {
       code: coupon.code,
+      title: coupon.storeName || coupon.code || 'Coupon',  // Add title field (required by database)
       store_name: coupon.storeName,
       store_ids: coupon.storeIds || [],
       discount_value: coupon.discount,
@@ -93,6 +94,7 @@ export async function createCoupon(coupon: Omit<Coupon, 'id'>, logoFile?: File) 
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
+
 
     if (coupon.storeIds) {
       console.log('✅ Saving coupon with storeIds:', coupon.storeIds)
@@ -531,6 +533,7 @@ export async function createCouponFromUrl(coupon: Omit<Coupon, 'id'>, logoUrl?: 
 
     const couponData = {
       code: coupon.code,
+      title: coupon.storeName || coupon.code || 'Coupon',  // Add title field (required by database)
       store_name: coupon.storeName,
       store_ids: coupon.storeIds || [],
       discount_value: coupon.discount,
@@ -551,6 +554,7 @@ export async function createCouponFromUrl(coupon: Omit<Coupon, 'id'>, logoUrl?: 
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
+
 
     console.log('📤 Sending coupon data to Supabase:')
     console.log(couponData)
@@ -655,17 +659,18 @@ export async function getLatestCoupons(): Promise<(Coupon | null)[]> {
       return Array(8).fill(null)
     }
 
+    console.log('🔍 Fetching last 8 uploaded coupons by created_at date...')
+
+    // Simply get the last 8 coupons by creation date, regardless of is_latest flag
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
-      .eq('is_latest', true)
       .eq('status', 'active')
-      .not('latest_layout_position', 'is', null)
-      .order('latest_layout_position', { ascending: true })
+      .order('created_at', { ascending: false })
       .limit(8)
 
     if (error) {
-      console.error('Error getting latest coupons:', {
+      console.error('❌ Error getting latest coupons:', {
         message: error.message,
         details: error.details,
         hint: error.hint,
@@ -674,40 +679,46 @@ export async function getLatestCoupons(): Promise<(Coupon | null)[]> {
       return Array(8).fill(null)
     }
 
-    const layoutSlots: (Coupon | null)[] = Array(8).fill(null)
-      ; (data || []).forEach((item: any) => {
-        if (item.latest_layout_position >= 1 && item.latest_layout_position <= 8) {
-          layoutSlots[item.latest_layout_position - 1] = {
-            id: item.id,
-            code: item.code,
-            storeName: item.store_name,
-            storeIds: item.store_ids || [],
-            discount: item.discount_value,
-            discountType: item.discount_type,
-            description: item.description,
-            isActive: item.status === 'active',
-            maxUses: item.max_uses || 0,
-            currentUses: item.current_uses || 0,
-            expiryDate: item.expiry_date,
-            logoUrl: item.logo_url,
-            url: item.url,
-            couponType: item.coupon_type,
-            getCodeText: item.get_code_text,
-            getDealText: item.get_deal_text,
-            isPopular: item.featured,
-            layoutPosition: item.layout_position,
-            isLatest: item.is_latest,
-            latestLayoutPosition: item.latest_layout_position,
-            categoryId: item.category_id,
-            createdAt: item.created_at,
-            updatedAt: item.updated_at,
-          }
-        }
-      })
+    console.log('✅ Query successful! Found coupons:', data?.length || 0)
+    console.log('📋 Coupon data:', data)
 
+    // Map the coupons to fill the 8 slots
+    const coupons = (data || []).map((item: any) => ({
+      id: item.id,
+      code: item.code,
+      storeName: item.store_name,
+      storeIds: item.store_ids || [],
+      discount: item.discount_value,
+      discountType: item.discount_type,
+      description: item.description,
+      isActive: item.status === 'active',
+      maxUses: item.max_uses || 0,
+      currentUses: item.current_uses || 0,
+      expiryDate: item.expiry_date,
+      logoUrl: item.logo_url,
+      url: item.url,
+      couponType: item.coupon_type,
+      getCodeText: item.get_code_text,
+      getDealText: item.get_deal_text,
+      isPopular: item.featured,
+      layoutPosition: item.layout_position,
+      isLatest: item.is_latest,
+      latestLayoutPosition: item.latest_layout_position,
+      categoryId: item.category_id,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+    }))
+
+    // Fill remaining slots with null if less than 8 coupons
+    const layoutSlots: (Coupon | null)[] = [...coupons]
+    while (layoutSlots.length < 8) {
+      layoutSlots.push(null)
+    }
+
+    console.log('🎯 Final result:', coupons.length, 'coupons +', (8 - coupons.length), 'empty slots')
     return layoutSlots
   } catch (error) {
-    console.error('Error getting latest coupons:', error)
+    console.error('❌ Error getting latest coupons:', error)
     return Array(8).fill(null)
   }
 }

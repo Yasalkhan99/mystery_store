@@ -51,6 +51,7 @@ export default function CouponsPage() {
   const [selectedStoreIds, setSelectedStoreIds] = useState<string[]>([]);
   const [isStoreDropdownOpen, setIsStoreDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [storeSearchQuery, setStoreSearchQuery] = useState<string>('');
   const [isCreating, setIsCreating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 22;
@@ -592,14 +593,33 @@ export default function CouponsPage() {
   };
 
   const handleLogoUrlChange = (url: string) => {
-    setLogoUrl(url);
-    if (isCloudinaryUrl(url)) {
-      const extracted = extractOriginalCloudinaryUrl(url);
+    let finalUrl = url;
+
+    // Smart detection: If URL looks like a website (not an image), convert to favicon
+    if (url && !isCloudinaryUrl(url)) {
+      try {
+        const urlObj = new URL(url);
+        // Check if it's NOT an image URL (no image extension)
+        const isImageUrl = /\.(jpg|jpeg|png|gif|svg|webp|ico)$/i.test(urlObj.pathname);
+
+        if (!isImageUrl) {
+          // It's a website URL, convert to favicon
+          finalUrl = `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=64`;
+          console.log('🔄 Auto-converted website URL to favicon:', url, '→', finalUrl);
+        }
+      } catch (e) {
+        // Invalid URL, use as-is
+      }
+    }
+
+    setLogoUrl(finalUrl);
+    if (isCloudinaryUrl(finalUrl)) {
+      const extracted = extractOriginalCloudinaryUrl(finalUrl);
       setExtractedLogoUrl(extracted);
       setLogoPreview(extracted);
     } else {
       setExtractedLogoUrl(null);
-      setLogoPreview(url);
+      setLogoPreview(finalUrl);
     }
   };
 
@@ -960,26 +980,153 @@ export default function CouponsPage() {
           </div>
 
           <form onSubmit={handleCreate} className="space-y-4">
-            {/* Store IDs Input - Simple Text Field */}
+            {/* Store Selection - Multi-Select Dropdown */}
             <div>
               <label className="block text-gray-900 text-sm font-bold mb-2">
-                Store IDs (comma-separated, e.g., "1,2,3")
+                Select Stores (Optional)
               </label>
-              <input
-                type="text"
-                value={selectedStoreIds.join(',')}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  // Parse comma-separated values and filter out empty strings
-                  const ids = value.split(',').map(id => id.trim()).filter(id => id !== '');
-                  setSelectedStoreIds(ids);
-                  console.log('🛒 Store IDs updated:', ids);
-                }}
-                placeholder="Enter store IDs separated by commas (e.g., 1,2,3)"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="relative" ref={storeDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsStoreDropdownOpen(!isStoreDropdownOpen)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-left flex items-center justify-between"
+                >
+                  <span className="text-gray-700">
+                    {selectedStoreIds.length === 0
+                      ? 'Select stores...'
+                      : `${selectedStoreIds.length} store${selectedStoreIds.length > 1 ? 's' : ''} selected`}
+                  </span>
+                  <svg
+                    className={`w-5 h-5 text-gray-400 transition-transform ${isStoreDropdownOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {isStoreDropdownOpen && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-hidden flex flex-col">
+                    {/* Search Input */}
+                    <div className="p-2 border-b border-gray-200 bg-gray-50">
+                      <input
+                        type="text"
+                        placeholder="Search by name or ID..."
+                        value={storeSearchQuery}
+                        onChange={(e) => setStoreSearchQuery(e.target.value)}
+                        className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+
+                    {/* Store List */}
+                    <div className="overflow-y-auto">
+                      {stores.length === 0 ? (
+                        <div className="px-4 py-3 text-sm text-gray-500">No stores available</div>
+                      ) : (
+                        (() => {
+                          const filteredStores = stores.filter(store => {
+                            if (!storeSearchQuery.trim()) return true;
+                            const query = storeSearchQuery.toLowerCase();
+                            const matchesName = store.name?.toLowerCase().includes(query);
+                            const matchesId = store.storeId?.toString().includes(query);
+                            return matchesName || matchesId;
+                          });
+
+                          return filteredStores.length === 0 ? (
+                            <div className="px-4 py-3 text-sm text-gray-500">No stores found for "{storeSearchQuery}"</div>
+                          ) : (
+                            filteredStores.map((store) => {
+                              const isSelected = selectedStoreIds.includes(store.id!);
+                              return (
+                                <label
+                                  key={store.id}
+                                  className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        const newSelectedIds = [...selectedStoreIds, store.id!];
+                                        setSelectedStoreIds(newSelectedIds);
+
+                                        // Auto-fetch logo from first selected store
+                                        if (newSelectedIds.length === 1) {
+                                          let logoToUse = '';
+
+                                          // Priority 1: Use store's logoUrl if available
+                                          if (store.logoUrl && store.logoUrl.trim() !== '') {
+                                            logoToUse = store.logoUrl;
+                                            console.log('✅ Using store logoUrl');
+                                          }
+                                          // Priority 2: Use favicon from tracking link or website URL
+                                          else if (store.trackingLink || store.websiteUrl) {
+                                            const siteUrl = store.trackingLink || store.websiteUrl;
+                                            try {
+                                              // Extract full URL for favicon
+                                              const url = new URL(siteUrl!);
+                                              // Use simple Google favicon API (most reliable)
+                                              logoToUse = `https://www.google.com/s2/favicons?domain=${url.hostname}&sz=64`;
+                                              console.log('✅ Using favicon from:', url.hostname, '→', logoToUse);
+                                            } catch (e) {
+                                              console.log('⚠️ Invalid URL:', siteUrl);
+                                            }
+                                          }
+
+                                          if (logoToUse) {
+                                            setLogoUrl(logoToUse);
+                                            handleLogoUrlChange(logoToUse);
+                                            setLogoUploadMethod('url');
+                                            console.log('✅ Auto-populated logo:', logoToUse);
+                                          }
+                                        }
+                                      } else {
+                                        setSelectedStoreIds(selectedStoreIds.filter(id => id !== store.id));
+                                      }
+                                    }}
+                                    className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                  />
+                                  <span className="text-sm text-gray-700">
+                                    {store.storeId && <span className="font-mono text-blue-600 mr-2">#{store.storeId}</span>}
+                                    {store.name}
+                                  </span>
+                                </label>
+                              );
+                            })
+                          );
+                        })()
+                      )}
+                    </div>
+                  </div>
+                )}
+                {selectedStoreIds.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {selectedStoreIds.map((storeId) => {
+                      const store = stores.find(s => s.id === storeId);
+                      if (!store) return null;
+                      return (
+                        <span
+                          key={storeId}
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full"
+                        >
+                          {store.name}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedStoreIds(selectedStoreIds.filter(id => id !== storeId))}
+                            className="ml-1 text-blue-600 hover:text-blue-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
               <p className="mt-1 text-xs text-gray-500">
-                Enter the numeric Store IDs from your stores table (e.g., 1,2,3,4)
+                Select one or more stores to associate with this coupon. Leave empty if not store-specific.
               </p>
             </div>
             {/* Coupon Type Selection */}
@@ -1257,9 +1404,28 @@ export default function CouponsPage() {
                 </div>
               )}
 
-              {logoPreview && (
-                <div className="mt-2">
-                  <img src={logoPreview} alt="Logo preview" className="h-16 object-contain" />
+              {/* Logo Preview */}
+              {(logoPreview || logoUrl || extractedLogoUrl) && (
+                <div className="mt-3">
+                  <p className="text-sm font-semibold text-gray-700 mb-2">Logo preview:</p>
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 inline-block">
+                    <img
+                      src={logoPreview || extractedLogoUrl || logoUrl}
+                      alt="Logo preview"
+                      className="h-20 w-auto object-contain max-w-xs"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent && !parent.querySelector('.error-text')) {
+                          const errorDiv = document.createElement('div');
+                          errorDiv.className = 'error-text text-sm text-red-600';
+                          errorDiv.textContent = 'Failed to load image';
+                          parent.appendChild(errorDiv);
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               )}
             </div>
