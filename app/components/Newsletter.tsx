@@ -25,7 +25,7 @@ export default function Newsletter() {
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                             Subscribe Our Newsletter To Get The Best
                         </h2>
-                        <p className="text-gray-700 font-medium">
+                        <p className="text-white font-medium">
                             Deals Right In Your Email
                         </p>
                     </div>
@@ -39,11 +39,11 @@ export default function Newsletter() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Enter Email"
                                 required
-                                className="flex-1 px-6 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CD3D1C] text-gray-900 placeholder-gray-500"
+                                className="flex-1 px-6 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B453C] text-gray-900 placeholder-gray-500"
                             />
                             <button
                                 type="submit"
-                                className="px-6 py-3 bg-[#CD3D1C] hover:bg-[#b03014] text-white rounded-lg transition font-semibold flex items-center gap-2"
+                                className="px-6 py-3 bg-[#0B453C] hover:bg-emerald-700 text-white rounded-lg transition font-semibold flex items-center gap-2"
                             >
                                 Send
                                 <Send className="w-4 h-4" />

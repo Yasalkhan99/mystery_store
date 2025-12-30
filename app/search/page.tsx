@@ -7,7 +7,8 @@ import { getCoupons, Coupon } from '@/lib/services/couponService';
 import { getStores, Store } from '@/lib/services/storeService';
 import { getCategories, Category } from '@/lib/services/categoryService';
 import Navbar from '@/app/components/Navbar';
-import NewsletterSubscription from '@/app/components/NewsletterSubscription';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
+import Newsletter from '@/app/components/Newsletter';
 import Footer from '@/app/components/Footer';
 
 function SearchContent() {
@@ -29,7 +30,7 @@ function SearchContent() {
   // console.log("filteredStores: ", filteredStores);
 
   useEffect(() => {
-    document.title = query ? `Search: ${query} - AvailCoupon` : 'Search - AvailCoupon';
+    document.title = query ? `Search: ${query} - COUPACHU` : 'Search - COUPACHU';
 
     const fetchData = async () => {
       setLoading(true);
@@ -116,12 +117,12 @@ function SearchContent() {
             {(query || categoryId) && (
               <div className="flex flex-wrap items-center gap-2 text-sm sm:text-base text-gray-600">
                 {query && (
-                  <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full font-semibold">
+                  <span className="px-3 py-1 bg-green-100 text-[#0B453C] rounded-full font-semibold">
                     Query: "{query}"
                   </span>
                 )}
                 {selectedCategory && (
-                  <span className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full font-semibold">
+                  <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-semibold">
                     Category: {selectedCategory.name}
                   </span>
                 )}
@@ -153,7 +154,7 @@ function SearchContent() {
                         href={coupon.url || '#'}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all duration-300"
+                        className="group bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:border-[#0B453C] hover:shadow-lg transition-all duration-300"
                       >
                         {coupon.logoUrl && (
                           <div className="mb-3 flex items-center justify-center h-16">
@@ -169,7 +170,7 @@ function SearchContent() {
                           </div>
                         )}
                         <div className="text-center">
-                          <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                          <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-[#0B453C] transition-colors">
                             {coupon.code}
                           </h3>
                           {coupon.storeName && (
@@ -196,7 +197,7 @@ function SearchContent() {
                       <Link
                         key={store.id}
                         href={`/stores/${store.slug || store.id}`}
-                        className="group bg-white border border-gray-200 rounded-lg p-4 hover:border-orange-400 hover:shadow-lg transition-all duration-300 text-center"
+                        className="group bg-white border border-gray-200 rounded-lg p-4 hover:border-[#0B453C] hover:shadow-lg transition-all duration-300 text-center"
                       >
                         {store.logoUrl ? (
                           <div className="mb-3 flex items-center justify-center h-16">
@@ -215,7 +216,7 @@ function SearchContent() {
                             <span className="text-gray-400 text-xs font-bold">{store.name.substring(0, 2)}</span>
                           </div>
                         )}
-                        <h3 className="font-semibold text-sm text-gray-900 group-hover:text-orange-600 transition-colors truncate">
+                        <h3 className="font-semibold text-sm text-gray-900 group-hover:text-[#0B453C] transition-colors truncate">
                           {store.name}
                         </h3>
                       </Link>
@@ -243,6 +244,14 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden w-full">
       <Navbar />
+
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={[
+          { label: 'Search' }
+        ]}
+      />
+
       <Suspense fallback={
         <div className="w-full px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16 bg-white overflow-x-hidden">
           <div className="max-w-7xl mx-auto w-full">
@@ -254,9 +263,8 @@ export default function SearchPage() {
       }>
         <SearchContent />
       </Suspense>
-      <NewsletterSubscription />
+      <Newsletter />
       <Footer />
     </div>
   );
 }
-

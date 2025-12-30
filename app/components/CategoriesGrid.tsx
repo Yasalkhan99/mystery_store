@@ -17,8 +17,13 @@ export default function CategoriesGrid() {
         // Sort categories
         const sorted = [...data].sort((a, b) => {
           if (sortBy === 'newest') {
-            const aTime = a.createdAt?.toMillis() || 0;
-            const bTime = b.createdAt?.toMillis() || 0;
+            // Handle both Firebase Timestamp and string dates
+            const aTime = a.createdAt
+              ? (typeof a.createdAt === 'string' ? new Date(a.createdAt).getTime() : (a.createdAt as any).toMillis())
+              : 0;
+            const bTime = b.createdAt
+              ? (typeof b.createdAt === 'string' ? new Date(b.createdAt).getTime() : (b.createdAt as any).toMillis())
+              : 0;
             return bTime - aTime;
           } else {
             return a.name.localeCompare(b.name);
@@ -68,7 +73,7 @@ export default function CategoriesGrid() {
               id="sortBy"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'name')}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#0B453C]"
             >
               <option value="newest">Newest</option>
               <option value="name">Name</option>
@@ -88,7 +93,7 @@ export default function CategoriesGrid() {
                 const row1 = chunk.slice(0, 3);
                 const row2 = chunk.slice(3, 6);
                 const row3 = chunk.slice(6, 9);
-                
+
                 return (
                   <div key={chunkIndex} className="flex-shrink-0 w-[calc(100vw-2rem)] max-w-[400px] snap-center">
                     <div className="grid grid-rows-3 gap-3">
@@ -98,7 +103,7 @@ export default function CategoriesGrid() {
                           <Link
                             key={category.id}
                             href={`/categories/${category.id}`}
-                            className="flex flex-col items-center gap-2 p-2 rounded-xl hover:bg-gradient-to-br hover:from-pink-50 hover:to-orange-50 transition-all duration-300 group"
+                            className="flex flex-col items-center gap-2 p-2 rounded-xl hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 transition-all duration-300 group"
                           >
                             <div
                               className="w-12 h-12 rounded-full flex items-center justify-center shadow-md group-hover:shadow-xl transition-all duration-300 relative overflow-hidden group-hover:scale-110"
@@ -107,7 +112,7 @@ export default function CategoriesGrid() {
                               <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
                                 style={{ backgroundColor: category.backgroundColor }}
                               ></div>
-                              
+
                               {category.logoUrl ? (
                                 <img
                                   src={category.logoUrl}
@@ -128,20 +133,20 @@ export default function CategoriesGrid() {
                                 </div>
                               )}
                             </div>
-                            <span className="text-xs font-semibold text-gray-800 group-hover:text-pink-600 transition-colors duration-300 lowercase text-center line-clamp-2">
+                            <span className="text-xs font-semibold text-gray-800 group-hover:text-[#0B453C] transition-colors duration-300 lowercase text-center line-clamp-2">
                               {category.name.toLowerCase()}
                             </span>
                           </Link>
                         ))}
                       </div>
-                      
+
                       {/* Row 2 */}
                       <div className="grid grid-cols-3 gap-3">
                         {row2.map((category) => (
                           <Link
                             key={category.id}
                             href={`/categories/${category.id}`}
-                            className="flex flex-col items-center gap-2 p-2 rounded-xl hover:bg-gradient-to-br hover:from-pink-50 hover:to-orange-50 transition-all duration-300 group"
+                            className="flex flex-col items-center gap-2 p-2 rounded-xl hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 transition-all duration-300 group"
                           >
                             <div
                               className="w-12 h-12 rounded-full flex items-center justify-center shadow-md group-hover:shadow-xl transition-all duration-300 relative overflow-hidden group-hover:scale-110"
@@ -150,7 +155,7 @@ export default function CategoriesGrid() {
                               <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
                                 style={{ backgroundColor: category.backgroundColor }}
                               ></div>
-                              
+
                               {category.logoUrl ? (
                                 <img
                                   src={category.logoUrl}
@@ -171,20 +176,20 @@ export default function CategoriesGrid() {
                                 </div>
                               )}
                             </div>
-                            <span className="text-xs font-semibold text-gray-800 group-hover:text-pink-600 transition-colors duration-300 lowercase text-center line-clamp-2">
+                            <span className="text-xs font-semibold text-gray-800 group-hover:text-[#0B453C] transition-colors duration-300 lowercase text-center line-clamp-2">
                               {category.name.toLowerCase()}
                             </span>
                           </Link>
                         ))}
                       </div>
-                      
+
                       {/* Row 3 */}
                       <div className="grid grid-cols-3 gap-3">
                         {row3.map((category) => (
                           <Link
                             key={category.id}
                             href={`/categories/${category.id}`}
-                            className="flex flex-col items-center gap-2 p-2 rounded-xl hover:bg-gradient-to-br hover:from-pink-50 hover:to-orange-50 transition-all duration-300 group"
+                            className="flex flex-col items-center gap-2 p-2 rounded-xl hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 transition-all duration-300 group"
                           >
                             <div
                               className="w-12 h-12 rounded-full flex items-center justify-center shadow-md group-hover:shadow-xl transition-all duration-300 relative overflow-hidden group-hover:scale-110"
@@ -193,7 +198,7 @@ export default function CategoriesGrid() {
                               <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
                                 style={{ backgroundColor: category.backgroundColor }}
                               ></div>
-                              
+
                               {category.logoUrl ? (
                                 <img
                                   src={category.logoUrl}
@@ -214,7 +219,7 @@ export default function CategoriesGrid() {
                                 </div>
                               )}
                             </div>
-                            <span className="text-xs font-semibold text-gray-800 group-hover:text-pink-600 transition-colors duration-300 lowercase text-center line-clamp-2">
+                            <span className="text-xs font-semibold text-gray-800 group-hover:text-[#0B453C] transition-colors duration-300 lowercase text-center line-clamp-2">
                               {category.name.toLowerCase()}
                             </span>
                           </Link>
@@ -233,7 +238,7 @@ export default function CategoriesGrid() {
               <Link
                 key={category.id}
                 href={`/categories/${category.id}`}
-                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-orange-50 transition-all duration-300 group transform hover:scale-105 hover:shadow-lg"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 transition-all duration-300 group transform hover:scale-105 hover:shadow-lg"
               >
                 <div
                   className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-full flex items-center justify-center shadow-md group-hover:shadow-xl transition-all duration-300 relative overflow-hidden group-hover:scale-110"
@@ -243,7 +248,7 @@ export default function CategoriesGrid() {
                   <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
                     style={{ backgroundColor: category.backgroundColor }}
                   ></div>
-                  
+
                   {category.logoUrl ? (
                     <img
                       src={category.logoUrl}
@@ -279,15 +284,15 @@ export default function CategoriesGrid() {
                     </div>
                   )}
                 </div>
-                <span className="text-sm sm:text-base font-semibold text-gray-800 group-hover:text-pink-600 transition-all duration-300 lowercase flex-1 group-hover:translate-x-1">
+                <span className="text-sm sm:text-base font-semibold text-gray-800 group-hover:text-[#0B453C] transition-all duration-300 lowercase flex-1 group-hover:translate-x-1">
                   {category.name.toLowerCase()}
                 </span>
                 {/* Arrow icon on hover */}
-                <svg 
-                  className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 flex-shrink-0" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
+                <svg
+                  className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

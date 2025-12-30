@@ -49,7 +49,7 @@ export default function HeroBanners() {
   // Banner 2: 459px × 547px (aspect ratio: 459/547 ≈ 0.84)
   // Banner 3: 451px × 264px (aspect ratio: 451/264 ≈ 1.71)
   // Banner 4: 451px × 264px (aspect ratio: 451/264 ≈ 1.71)
-  
+
   // Use coupon logoUrl(s) for banner selection: fill banners from filtered coupons in order
   const couponsWithLogo = coupons.filter((coupon) => coupon.logoUrl);
 
@@ -74,18 +74,18 @@ export default function HeroBanners() {
   // Layout 2: Middle (index 1) - 459×547px
   // Layout 3: Top Right (index 2) - 451×264px
   // Layout 4: Bottom Right (index 3) - 451×264px
-  
+
   // If no banner at position, fallback to coupons with logo
-  const largeLeftBanner = banners[0] ? { imageUrl: banners[0].imageUrl, title: banners[0].title } : 
+  const largeLeftBanner = banners[0] ? { imageUrl: banners[0].imageUrl, title: banners[0].title } :
     (couponsWithLogo[0]?.logoUrl ? { imageUrl: processLogoUrl(couponsWithLogo[0].logoUrl) || '', title: couponsWithLogo[0].code } : null);
-  
-  const middleBanner = banners[1] ? { imageUrl: banners[1].imageUrl, title: banners[1].title } : 
+
+  const middleBanner = banners[1] ? { imageUrl: banners[1].imageUrl, title: banners[1].title } :
     (couponsWithLogo[1]?.logoUrl ? { imageUrl: processLogoUrl(couponsWithLogo[1].logoUrl) || '', title: couponsWithLogo[1].code } : null);
-  
-  const topRightBanner = banners[2] ? { imageUrl: banners[2].imageUrl, title: banners[2].title } : 
+
+  const topRightBanner = banners[2] ? { imageUrl: banners[2].imageUrl, title: banners[2].title } :
     (couponsWithLogo[2]?.logoUrl ? { imageUrl: processLogoUrl(couponsWithLogo[2].logoUrl) || '', title: couponsWithLogo[2].code } : null);
-  
-  const bottomRightBanner = banners[3] ? { imageUrl: banners[3].imageUrl, title: banners[3].title } : 
+
+  const bottomRightBanner = banners[3] ? { imageUrl: banners[3].imageUrl, title: banners[3].title } :
     (couponsWithLogo[3]?.logoUrl ? { imageUrl: processLogoUrl(couponsWithLogo[3].logoUrl) || '', title: couponsWithLogo[3].code } : null);
 
   return (
@@ -95,7 +95,7 @@ export default function HeroBanners() {
         {/* Banner 1 - Large Left: 930px × 547px (50.5% width on medium+ screens) */}
         <div className="w-full md:w-[50.5%] aspect-[930/547] min-h-[200px] sm:min-h-[300px]">
           {largeLeftBanner ? (
-            <div className="relative w-full h-full rounded-lg overflow-hidden bg-pink-50 shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center">
+            <div className="relative w-full h-full rounded-lg overflow-hidden bg-green-50 shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center">
               {largeLeftBanner.imageUrl.includes('res.cloudinary.com') || largeLeftBanner.imageUrl.includes('storage.googleapis.com') ? (
                 <Image
                   src={largeLeftBanner.imageUrl}
@@ -122,7 +122,7 @@ export default function HeroBanners() {
               )}
             </div>
           ) : (
-            <div className="w-full h-full rounded-lg bg-pink-50 flex items-center justify-center border-2 border-dashed border-pink-200">
+            <div className="w-full h-full rounded-lg bg-green-50 flex items-center justify-center border-2 border-dashed border-green-200">
               <p className="text-gray-400 text-xs sm:text-sm">Banner 1</p>
             </div>
           )}
@@ -165,7 +165,7 @@ export default function HeroBanners() {
           {/* Banner 3 - Top Right: 451px × 264px */}
           <div className="w-full aspect-[451/264] min-h-[150px] sm:min-h-[180px]">
             {topRightBanner ? (
-              <div className="relative w-full h-full rounded-lg overflow-hidden bg-orange-50 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="relative w-full h-full rounded-lg overflow-hidden bg-emerald-50 shadow-lg hover:shadow-xl transition-shadow">
                 {topRightBanner.imageUrl.includes('res.cloudinary.com') || topRightBanner.imageUrl.includes('storage.googleapis.com') ? (
                   <Image
                     src={topRightBanner.imageUrl}
@@ -187,7 +187,7 @@ export default function HeroBanners() {
                 )}
               </div>
             ) : (
-              <div className="w-full h-full rounded-lg bg-orange-50 flex items-center justify-center border-2 border-dashed border-orange-200">
+              <div className="w-full h-full rounded-lg bg-emerald-50 flex items-center justify-center border-2 border-dashed border-emerald-200">
                 <p className="text-gray-400 text-xs">Banner 3</p>
               </div>
             )}
@@ -196,7 +196,7 @@ export default function HeroBanners() {
           {/* Banner 4 - Bottom Right: 451px × 264px */}
           <div className="w-full aspect-[451/264] min-h-[150px] sm:min-h-[180px]">
             {bottomRightBanner ? (
-              <div className="relative w-full h-full rounded-lg overflow-hidden bg-pink-50 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="relative w-full h-full rounded-lg overflow-hidden bg-green-50 shadow-lg hover:shadow-xl transition-shadow">
                 {bottomRightBanner.imageUrl.includes('res.cloudinary.com') || bottomRightBanner.imageUrl.includes('storage.googleapis.com') ? (
                   <Image
                     src={bottomRightBanner.imageUrl}
@@ -218,7 +218,7 @@ export default function HeroBanners() {
                 )}
               </div>
             ) : (
-              <div className="w-full h-full rounded-lg bg-pink-50 flex items-center justify-center border-2 border-dashed border-pink-200">
+              <div className="w-full h-full rounded-lg bg-green-50 flex items-center justify-center border-2 border-dashed border-green-200">
                 <p className="text-gray-400 text-xs">Banner 4</p>
               </div>
             )}

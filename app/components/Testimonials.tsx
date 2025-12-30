@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -74,6 +74,7 @@ const testimonials: Testimonial[] = [
 
 export default function Testimonials() {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
 
     const nextTestimonial = () => {
         setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -91,6 +92,17 @@ export default function Testimonials() {
         const next = (currentIndex + 1) % testimonials.length;
         return [prev, currentIndex, next];
     };
+
+    // Auto-play functionality
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!isHovered) {
+                setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+            }
+        }, 5000); // Auto-advance every 5 seconds
+
+        return () => clearInterval(interval);
+    }, [isHovered]);
 
     return (
         <section className="py-20 bg-gradient-to-br from-green-50 via-white to-emerald-50 relative overflow-hidden">
@@ -127,7 +139,11 @@ export default function Testimonials() {
                 <div className="relative">
                     {/* Desktop: 3-Card Carousel */}
                     <div className="hidden md:block">
-                        <div className="relative h-[400px] flex items-center justify-center">
+                        <div
+                            className="relative h-[400px] flex items-center justify-center"
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                        >
                             <div className="flex items-center gap-6 justify-center w-full max-w-6xl mx-auto px-16">
                                 {getVisibleTestimonials().map((testimonialIndex, position) => {
                                     const testimonial = testimonials[testimonialIndex];
@@ -143,7 +159,12 @@ export default function Testimonials() {
                                                 scale: isCenter ? 1 : 0.9,
                                                 y: isCenter ? 0 : 20
                                             }}
-                                            transition={{ duration: 0.5 }}
+                                            transition={{
+                                                type: "spring",
+                                                stiffness: 200,
+                                                damping: 30,
+                                                mass: 1
+                                            }}
                                         >
                                             {/* Card */}
                                             <div className={`relative bg-white rounded-2xl p-8 shadow-xl transition-all duration-500 border border-gray-100 ${isCenter ? 'shadow-2xl' : 'shadow-lg'
@@ -216,14 +237,21 @@ export default function Testimonials() {
 
                     {/* Mobile: Single Card */}
                     <div className="md:hidden">
-                        <div className="relative h-[450px] flex items-center justify-center px-4">
+                        <div
+                            className="relative h-[450px] flex items-center justify-center px-4"
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                        >
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={currentIndex}
                                     initial={{ opacity: 0, x: 100 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -100 }}
-                                    transition={{ duration: 0.3 }}
+                                    transition={{
+                                        duration: 0.5,
+                                        ease: "easeInOut"
+                                    }}
                                     className="w-full max-w-md"
                                 >
                                     {/* Card */}
@@ -297,8 +325,8 @@ export default function Testimonials() {
                                 key={index}
                                 onClick={() => setCurrentIndex(index)}
                                 className={`transition-all duration-300 rounded-full ${index === currentIndex
-                                        ? 'w-8 h-2 bg-gradient-to-r from-[#0B453C] to-[#0f5c4e]'
-                                        : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+                                    ? 'w-8 h-2 bg-gradient-to-r from-[#0B453C] to-[#0f5c4e]'
+                                    : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
                                     }`}
                                 aria-label={`Go to testimonial ${index + 1}`}
                             />

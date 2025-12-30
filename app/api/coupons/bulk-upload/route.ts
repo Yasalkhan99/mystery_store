@@ -37,10 +37,18 @@ export async function POST(req: Request) {
 
     const supabase = supabaseServer();
 
+    // Filter out columns that don't exist in the database schema
+    // Remove categoryId and any other fields not in the actual schema
+    const cleanedRows = rows.map(row => {
+      const { categoryId, storeName, ...cleanRow } = row;
+      // Only include fields that exist in the database
+      return cleanRow;
+    });
+
     // Insert data into Supabase 'coupons' table
     const { error, count } = await supabase
       .from('coupons')
-      .insert(rows, { count: 'exact' });
+      .insert(cleanedRows, { count: 'exact' });
 
     if (error) {
       console.error('Supabase bulk upload error:', error);

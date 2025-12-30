@@ -2,197 +2,171 @@
 
 import { useEffect } from 'react';
 import Navbar from '@/app/components/Navbar';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
+import Newsletter from '@/app/components/Newsletter';
 import Footer from '@/app/components/Footer';
+import { Shield, Lock, Eye, RefreshCw, Smartphone, Share2, AlertCircle, Mail, Globe, Users } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   useEffect(() => {
-    document.title = 'Privacy Policy - AvailCoupon';
+    document.title = 'Privacy Policy - COUPACHU';
   }, []);
+
+  const sections = [
+    {
+      id: "introduction",
+      icon: <Globe className="w-6 h-6 text-[#0B453C]" />,
+      title: "1. Introduction",
+      content: "Welcome to COUPACHU (\"we,\" \"our,\" or \"us\"). We are committed to protecting your privacy and ensuring you have a positive experience on our website. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website COUPACHU.com."
+    },
+    {
+      id: "collection",
+      icon: <Users className="w-6 h-6 text-[#0B453C]" />,
+      title: "2. Information We Collect",
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-2">2.1 Information You Provide</h4>
+            <p className="text-gray-700">We may collect information that you voluntarily provide to us when you register for an account, subscribe to our newsletter, or contact us through our forms.</p>
+          </div>
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-2">2.2 Automatically Collected Information</h4>
+            <p className="text-gray-700">When you visit our website, we automatically collect certain information about your device, including IP address, browser type, and pages visited.</p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: "usage",
+      icon: <Eye className="w-6 h-6 text-[#0B453C]" />,
+      title: "3. How We Use Your Information",
+      content: "We use the information we collect to provide and maintain our services, personalize your experience, send you relevant updates (with your consent), and analyze website usage to improve our platform."
+    },
+    {
+      id: "tracking",
+      icon: <RefreshCw className="w-6 h-6 text-[#0B453C]" />,
+      title: "4. Cookies and Tracking",
+      content: "We use cookies and similar technologies to track activity on our platform and store certain information. You can manage your cookie preferences through your browser settings at any time."
+    },
+    {
+      id: "sharing",
+      icon: <Share2 className="w-6 h-6 text-[#0B453C]" />,
+      title: "5. Information Sharing",
+      content: "We do not sell or rent your personal information to third parties. We may share data with trusted service providers who assist us in operating our website, provided they agree to keep this information confidential."
+    },
+    {
+      id: "security",
+      icon: <Lock className="w-6 h-6 text-[#0B453C]" />,
+      title: "6. Data Security",
+      content: "We implement robust technical security measures to protect your data. However, remember that no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security."
+    },
+    {
+      id: "rights",
+      icon: <Shield className="w-6 h-6 text-[#0B453C]" />,
+      title: "7. Your Rights",
+      content: "Depending on your location, you may have rights to access, correct, or delete your personal data. You can always opt-out of marketing communications by following the unsubscribe link in our emails."
+    },
+    {
+      id: "third-party",
+      icon: <Smartphone className="w-6 h-6 text-[#0B453C]" />,
+      title: "8. Third-Party Links",
+      content: "Our platform contains links to partner retailers. We are not responsible for their privacy practices, and we encourage you to read the privacy policies of any third-party site you visit."
+    },
+    {
+      id: "updates",
+      icon: <AlertCircle className="w-6 h-6 text-[#0B453C]" />,
+      title: "9. Policy Updates",
+      content: "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the \"Last updated\" date at the top."
+    },
+    {
+      id: "contact",
+      icon: <Mail className="w-6 h-6 text-[#0B453C]" />,
+      title: "10. Contact Us",
+      content: "If you have any questions about this Privacy Policy, please contact us at privacy@COUPACHU.com."
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
-      <div className="w-full px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
-            Privacy Policy
+
+      {/* Hero Section */}
+      <div className="w-full bg-gradient-to-br from-green-50 via-white to-emerald-50 border-b border-green-100/50 py-16 sm:py-20 md:py-24 overflow-hidden relative">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-green-200/20 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-200/20 rounded-full -ml-24 -mb-24 blur-3xl"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-[#0B453C] text-sm font-semibold mb-6">
+            <Lock className="w-4 h-4" />
+            <span>Secure & Private</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+            Privacy <span className="text-[#0B453C]">Policy</span>
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
-            Last updated: January 2025
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Your privacy is our priority. Learn how we handle your data with transparency and care at COUPACHU.
           </p>
-
-          <div className="prose prose-sm sm:prose-base max-w-none space-y-6 sm:space-y-8">
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                1. Introduction
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Welcome to AvailCoupon ("we," "our," or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our website. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website availcoupon.com.
-              </p>
-              <p className="text-gray-700 leading-relaxed">
-                By using our website, you agree to the collection and use of information in accordance with this policy. If you do not agree with our policies and practices, please do not use our website.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                2. Information We Collect
-              </h2>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                2.1 Information You Provide
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We may collect information that you voluntarily provide to us when you:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>Register for an account or newsletter subscription</li>
-                <li>Contact us through our contact forms or email</li>
-                <li>Participate in surveys or promotional activities</li>
-                <li>Save coupons to your favorites</li>
-              </ul>
-              
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                2.2 Automatically Collected Information
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                When you visit our website, we automatically collect certain information about your device, including:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>IP address and location data</li>
-                <li>Browser type and version</li>
-                <li>Operating system</li>
-                <li>Pages you visit and time spent on pages</li>
-                <li>Referring website addresses</li>
-                <li>Cookies and similar tracking technologies</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                3. How We Use Your Information
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We use the information we collect for various purposes, including:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>To provide, maintain, and improve our services</li>
-                <li>To personalize your experience and deliver relevant content</li>
-                <li>To send you newsletters, promotional materials, and updates (with your consent)</li>
-                <li>To respond to your inquiries and provide customer support</li>
-                <li>To analyze website usage and trends</li>
-                <li>To detect, prevent, and address technical issues</li>
-                <li>To comply with legal obligations</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                4. Cookies and Tracking Technologies
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We use cookies and similar tracking technologies to track activity on our website and store certain information. Cookies are files with a small amount of data that may include an anonymous unique identifier. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
-              </p>
-              <p className="text-gray-700 leading-relaxed">
-                Types of cookies we use:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li><strong>Essential Cookies:</strong> Required for the website to function properly</li>
-                <li><strong>Analytics Cookies:</strong> Help us understand how visitors interact with our website</li>
-                <li><strong>Preference Cookies:</strong> Remember your settings and preferences</li>
-                <li><strong>Marketing Cookies:</strong> Used to deliver relevant advertisements</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                5. Information Sharing and Disclosure
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We do not sell, trade, or rent your personal information to third parties. We may share your information in the following circumstances:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li><strong>Service Providers:</strong> With trusted third-party service providers who assist us in operating our website and conducting our business</li>
-                <li><strong>Business Transfers:</strong> In connection with any merger, sale, or transfer of assets</li>
-                <li><strong>Legal Requirements:</strong> When required by law or to protect our rights and safety</li>
-                <li><strong>With Your Consent:</strong> When you have given us explicit permission to share your information</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                6. Data Security
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                7. Your Rights and Choices
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Depending on your location, you may have certain rights regarding your personal information, including:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>The right to access and receive a copy of your personal data</li>
-                <li>The right to rectify inaccurate or incomplete information</li>
-                <li>The right to request deletion of your personal data</li>
-                <li>The right to object to processing of your personal data</li>
-                <li>The right to data portability</li>
-                <li>The right to withdraw consent at any time</li>
-                <li>The right to opt-out of marketing communications</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                8. Third-Party Links
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Our website may contain links to third-party websites, including retailer websites where you can redeem coupons. We are not responsible for the privacy practices or content of these external sites. We encourage you to review the privacy policies of any third-party sites you visit.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                9. Children's Privacy
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Our website is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us immediately.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                10. Changes to This Privacy Policy
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date. You are advised to review this Privacy Policy periodically for any changes.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                11. Contact Us
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                If you have any questions about this Privacy Policy or our data practices, please contact us at:
-              </p>
-              <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
-                <p className="text-gray-700 mb-2">
-                  <strong>Email:</strong> privacy@availcoupon.com
-                </p>
-                <p className="text-gray-700">
-                  <strong>Website:</strong> www.availcoupon.com
-                </p>
-              </div>
-            </section>
+          <div className="mt-8 text-sm font-medium text-gray-400">
+            Last Updated: Jan 2025
           </div>
         </div>
       </div>
 
+      <Breadcrumbs items={[{ label: 'Privacy Policy' }]} />
+
+      <div className="w-full px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 gap-12 sm:gap-16">
+            {sections.map((section, idx) => (
+              <div key={section.id} className="relative group">
+                <div className="flex gap-4 sm:gap-6">
+                  {/* Icon Column */}
+                  <div className="flex-shrink-0 flex flex-col items-center">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">
+                      {section.icon}
+                    </div>
+                    {idx < sections.length - 1 && (
+                      <div className="w-px flex-1 bg-gradient-to-b from-green-100 to-transparent my-4"></div>
+                    )}
+                  </div>
+
+                  {/* Content Column */}
+                  <div className="flex-1 pb-12 sm:pb-16">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">
+                      {section.title}
+                    </h2>
+                    <div className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                      {section.content}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Summary Card */}
+          <div className="mt-8 bg-[#0B453C] rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="max-w-md">
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4">Summary of Privacy</h3>
+                <p className="text-white/80 leading-relaxed">
+                  We collect minimal data to provide the best deals. We never sell your personal information and always prioritize security in every transaction.
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                  <Shield className="w-12 h-12 text-white mb-4" />
+                  <div className="text-sm font-semibold uppercase tracking-wider">Verified Secure</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Newsletter />
       <Footer />
     </div>
   );

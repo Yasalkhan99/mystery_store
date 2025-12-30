@@ -16,25 +16,25 @@ const barlow = Barlow({
   weight: '700',
   subsets: ["latin"],
   variable: "--font-barlow",
-}); 
+});
 
 export const metadata: Metadata = {
-  title: "AvailCoupon",
+  title: "COUPACHU",
   description: "Manage coupons and discounts with Firebase backend",
   icons: {
     icon: [
       {
-        url: '/Favicon 1.svg',
+        url: '/Coupachu Icone-2.svg',
         type: 'image/svg+xml',
       },
       {
-        url: '/Favicon 1.svg',
+        url: '/Coupachu Icone-2.svg',
         sizes: 'any',
         type: 'image/svg+xml',
       },
     ],
-    apple: '/Favicon 1.svg',
-    shortcut: '/Favicon 1.svg',
+    apple: '/Coupachu Icone-2.svg',
+    shortcut: '/Coupachu Icone-2.svg',
   },
   viewport: {
     width: 'device-width',

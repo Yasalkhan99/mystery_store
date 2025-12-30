@@ -125,7 +125,7 @@ export default function EmailPage() {
                 id="email1"
                 value={email1}
                 onChange={(e) => setEmail1(e.target.value)}
-                placeholder="admin@availcoupon.com"
+                placeholder="admin@COUPACHU.com"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               />
             </div>
@@ -139,7 +139,7 @@ export default function EmailPage() {
                 id="email2"
                 value={email2}
                 onChange={(e) => setEmail2(e.target.value)}
-                placeholder="support@availcoupon.com"
+                placeholder="support@COUPACHU.com"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               />
             </div>
@@ -153,7 +153,7 @@ export default function EmailPage() {
                 id="email3"
                 value={email3}
                 onChange={(e) => setEmail3(e.target.value)}
-                placeholder="info@availcoupon.com"
+                placeholder="info@COUPACHU.com"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               />
             </div>

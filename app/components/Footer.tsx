@@ -36,8 +36,18 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" className="text-gray-300 hover:text-white transition text-sm">
+                  <Link href="/about-us" className="text-gray-300 hover:text-white transition text-sm">
                     About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact-us" className="text-gray-300 hover:text-white transition text-sm">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy-policy" className="text-gray-300 hover:text-white transition text-sm">
+                    Privacy Policy
                   </Link>
                 </li>
                 <li>
@@ -81,34 +91,37 @@ export default function Footer() {
         </div>
 
         {/* Middle Section - Logo & Social Media */}
-        <div className="py-8 border-b border-gray-700/50">
+        <div className="py-3 border-b border-gray-700/50">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-[#CD3D1C] rounded-lg flex items-center justify-center">
-                  <span className="text-white text-xl font-bold">🛍️</span>
-                </div>
-                <span className="text-2xl font-bold">Mystery Store</span>
-              </div>
+            <div className="flex items-center justify-center gap-0.5">
+              <img
+                src="/Coupachu Icone-2.svg"
+                alt="Coupachu Icon"
+                className="w-12 h-12 object-contain -mr-1"
+              />
+              <span className="text-3xl font-bold tracking-tight mt-3">
+                <span className="text-[#CD3D1C]">o</span>
+                <span className="text-white">upachu</span>
+              </span>
             </div>
 
             {/* Social Media Icons */}
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-400 mr-2">Follow Us On :</span>
-              <a href="#" className="w-8 h-8 bg-[#CD3D1C] rounded-full flex items-center justify-center hover:bg-[#b03014] transition">
+              <a href="#" className="w-8 h-8 bg-[#0B453C] rounded-full flex items-center justify-center hover:bg-emerald-700 transition">
                 <Facebook className="w-4 h-4" />
               </a>
-              <a href="#" className="w-8 h-8 bg-[#CD3D1C] rounded-full flex items-center justify-center hover:bg-[#b03014] transition">
+              <a href="#" className="w-8 h-8 bg-[#0B453C] rounded-full flex items-center justify-center hover:bg-emerald-700 transition">
                 <Twitter className="w-4 h-4" />
               </a>
-              <a href="#" className="w-8 h-8 bg-[#CD3D1C] rounded-full flex items-center justify-center hover:bg-[#b03014] transition">
+              <a href="#" className="w-8 h-8 bg-[#0B453C] rounded-full flex items-center justify-center hover:bg-emerald-700 transition">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" className="w-8 h-8 bg-[#CD3D1C] rounded-full flex items-center justify-center hover:bg-[#b03014] transition">
+              <a href="#" className="w-8 h-8 bg-[#0B453C] rounded-full flex items-center justify-center hover:bg-emerald-700 transition">
                 <Youtube className="w-4 h-4" />
               </a>
-              <a href="#" className="w-8 h-8 bg-[#CD3D1C] rounded-full flex items-center justify-center hover:bg-[#b03014] transition">
+              <a href="#" className="w-8 h-8 bg-[#0B453C] rounded-full flex items-center justify-center hover:bg-emerald-700 transition">
                 <Linkedin className="w-4 h-4" />
               </a>
             </div>
@@ -119,7 +132,7 @@ export default function Footer() {
         <div className="py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-400">
-              Copyright © 2025 <span className="text-[#CD3D1C] font-semibold">Mystery Store</span>. All rights reserved.
+              Copyright © 2025 <span className="text-emerald-400 font-semibold">COUPACHU</span>. All rights reserved.
             </p>
 
             {/* Payment Method Icons */}
@@ -136,7 +149,7 @@ export default function Footer() {
                 <span className="text-xs font-bold text-blue-600">AMEX</span>
               </div>
               <div className="px-3 py-1.5 bg-white rounded flex items-center justify-center">
-                <span className="text-xs font-bold text-orange-500">₿</span>
+                <span className="text-xs font-bold text-emerald-600">₿</span>
               </div>
               <div className="px-3 py-1.5 bg-white rounded flex items-center justify-center">
                 <span className="text-xs font-bold text-gray-700">GPay</span>

@@ -10,6 +10,26 @@ import {
 } from '@/lib/services/logoService';
 import { extractOriginalCloudinaryUrl, isCloudinaryUrl } from '@/lib/utils/cloudinary';
 
+// Helper function to extract domain from URL
+const extractDomain = (url: string): string | null => {
+  if (!url) return null;
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname.replace('www.', '');
+  } catch {
+    return null;
+  }
+};
+
+// Get favicon URL with fallback to website URL
+const getFaviconUrl = (logo: Logo): string | null => {
+  if (logo.websiteUrl) {
+    const domain = extractDomain(logo.websiteUrl);
+    if (domain) return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+  }
+  return null;
+};
+
 export default function LogosPage() {
   const [logos, setLogos] = useState<Logo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +77,7 @@ export default function LogosPage() {
           setLogoUrl(data.logoUrl);
           handleLogoUrlChange(data.logoUrl);
         }
-        
+
         // Auto-populate form fields
         setFormData({
           ...formData,
@@ -91,15 +111,15 @@ export default function LogosPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Use extracted logoUrl if available, otherwise use manually entered logoUrl
     const finalLogoUrl = logoUrl || formData.logoUrl || '';
-    
+
     if (!finalLogoUrl.trim()) {
       alert('Please enter a logo URL or extract from website URL');
       return;
     }
-    
+
     // Check if layout position is already taken
     if (formData.layoutPosition !== null) {
       const logosAtPosition = logos.filter(
@@ -113,14 +133,14 @@ export default function LogosPage() {
         await updateLogo(logosAtPosition[0].id!, { layoutPosition: null });
       }
     }
-    
+
     const result = await createLogoFromUrl(
       formData.name || '',
       finalLogoUrl,
       formData.layoutPosition !== undefined ? formData.layoutPosition : null,
       formData.websiteUrl || websiteUrl || ''
     );
-    
+
     if (result.success) {
       fetchLogos();
       setShowForm(false);
@@ -146,7 +166,7 @@ export default function LogosPage() {
 
   const handleAssignLayoutPosition = async (logo: Logo, position: number | null) => {
     if (!logo.id) return;
-    
+
     // Check if position is already taken by another logo
     if (position !== null) {
       const logosAtPosition = logos.filter(
@@ -160,7 +180,7 @@ export default function LogosPage() {
         await updateLogo(logosAtPosition[0].id!, { layoutPosition: null });
       }
     }
-    
+
     await updateLogo(logo.id, { layoutPosition: position });
     fetchLogos();
   };
@@ -182,7 +202,7 @@ export default function LogosPage() {
           <h2 className="text-xl font-bold text-gray-800 mb-4">
             Create New Logo
           </h2>
-          
+
           {/* URL Extraction Section */}
           <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
             <label htmlFor="websiteUrl" className="block text-gray-700 text-sm font-semibold mb-2">
@@ -298,7 +318,7 @@ export default function LogosPage() {
                 Logos will be displayed in a grid layout on the homepage. Position 1-18 represents the order in the grid.
               </p>
             </div>
-            
+
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-semibold"
@@ -332,20 +352,53 @@ export default function LogosPage() {
                 {logos.map((logo) => (
                   <tr key={logo.id} className="border-b hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      {logo.logoUrl ? (
-                        <img
-                          src={logo.logoUrl}
-                          alt={logo.name}
-                          className="h-12 object-contain"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="h-12 w-12 bg-gray-200 rounded flex items-center justify-center">
-                          <span className="text-xs text-gray-500">{logo.name.charAt(0)}</span>
-                        </div>
-                      )}
+                      {(() => {
+                        const faviconUrl = getFaviconUrl(logo);
+                        const primaryUrl = logo.logoUrl;
+                        const fallbackInitial = logo.name?.charAt(0) || '?';
+
+                        return (
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50 border border-gray-100">
+                            {primaryUrl ? (
+                              <img
+                                src={primaryUrl}
+                                alt={logo.name}
+                                className="w-full h-full object-contain"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  if (faviconUrl && target.src !== faviconUrl) {
+                                    target.src = faviconUrl;
+                                  } else {
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = `<div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">${fallbackInitial.toUpperCase()}</div>`;
+                                    }
+                                  }
+                                }}
+                              />
+                            ) : faviconUrl ? (
+                              <img
+                                src={faviconUrl}
+                                alt={logo.name}
+                                className="w-full h-full object-contain"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    parent.innerHTML = `<div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">${fallbackInitial.toUpperCase()}</div>`;
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                                {fallbackInitial.toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4 font-semibold">{logo.name}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">

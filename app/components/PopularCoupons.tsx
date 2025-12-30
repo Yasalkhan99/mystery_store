@@ -361,8 +361,8 @@ export default function PopularCoupons() {
                         <button
                           onClick={(e) => handleToggleFavorite(e, coupon)}
                           className={`p-2 rounded-lg transition-colors ${coupon.id && isFavorite(coupon.id)
-                            ? 'bg-pink-100 text-pink-600'
-                            : 'bg-gray-100 text-gray-600 hover:bg-pink-100 hover:text-pink-600'
+                            ? 'bg-green-100 text-[#0B453C]'
+                            : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-[#0B453C]'
                             }`}
                           title={coupon.id && isFavorite(coupon.id) ? 'Remove from favorites' : 'Add to favorites'}
                         >
@@ -390,7 +390,7 @@ export default function PopularCoupons() {
                           )}
                         </span>
                         {getLastTwoDigits(coupon) && !(coupon.id && revealedCoupons.has(coupon.id)) && (
-                          <div className="w-0 opacity-0 group-hover:w-20 group-hover:opacity-100 transition-all duration-300 ease-out flex items-center justify-center border-l-2 border-dashed border-white/70 ml-2 pl-2 whitespace-nowrap overflow-hidden bg-gradient-to-r from-transparent to-orange-600/20" style={{ borderStyle: 'dashed' }}>
+                          <div className="w-0 opacity-0 group-hover:w-20 group-hover:opacity-100 transition-all duration-300 ease-out flex items-center justify-center border-l-2 border-dashed border-white/70 ml-2 pl-2 whitespace-nowrap overflow-hidden bg-gradient-to-r from-transparent to-emerald-600/20" style={{ borderStyle: 'dashed' }}>
                             <span className="text-white font-bold text-xs drop-shadow-md">...{getLastTwoDigits(coupon)}</span>
                           </div>
                         )}

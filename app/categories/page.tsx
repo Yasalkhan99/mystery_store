@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { getBannerByLayoutPosition, Banner } from '@/lib/services/bannerService';
 import Navbar from '@/app/components/Navbar';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
 import CategoriesGrid from '@/app/components/CategoriesGrid';
-import NewsletterSubscription from '@/app/components/NewsletterSubscription';
+import Newsletter from '@/app/components/Newsletter';
 import Footer from '@/app/components/Footer';
 
 export default function CategoriesPage() {
@@ -13,8 +14,8 @@ export default function CategoriesPage() {
 
   useEffect(() => {
     // Set page title
-    document.title = 'Categories - AvailCoupon';
-    
+    document.title = 'Categories - COUPACHU';
+
     const fetchBanner = async () => {
       setLoading(true);
       try {
@@ -32,7 +33,7 @@ export default function CategoriesPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
+
       {/* Banner Section with Layout 6 - 1728x547 */}
       <div className="w-full">
         {loading ? (
@@ -53,16 +54,23 @@ export default function CategoriesPage() {
             </div>
           </div>
         ) : (
-          <div className="w-full aspect-[1728/547] bg-gradient-to-r from-pink-100 to-orange-100"></div>
+          <div className="w-full aspect-[1728/547] bg-gradient-to-r from-green-50 to-emerald-50"></div>
         )}
       </div>
 
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={[
+          { label: 'Categories' }
+        ]}
+      />
+
       {/* Categories Grid Section */}
       <CategoriesGrid />
-      
+
       {/* Newsletter Subscription Section */}
-      <NewsletterSubscription />
-      
+      <Newsletter />
+
       {/* Footer */}
       <Footer />
     </div>

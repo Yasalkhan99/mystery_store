@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { getNews, NewsArticle } from '@/lib/services/newsService';
 import Navbar from '@/app/components/Navbar';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
 import Footer from '@/app/components/Footer';
-import NewsletterSubscription from '@/app/components/NewsletterSubscription';
+import Newsletter from '@/app/components/Newsletter';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,8 +16,8 @@ export default function BlogsPage() {
   const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
 
   useEffect(() => {
-    document.title = 'Blogs & Articles - AvailCoupon';
-    
+    document.title = 'Blogs & Articles - COUPACHU';
+
     const fetchArticles = async () => {
       setLoading(true);
       try {
@@ -24,7 +25,14 @@ export default function BlogsPage() {
         // Sort by date (newest first) or createdAt
         const sorted = data.sort((a, b) => {
           if (a.createdAt && b.createdAt) {
-            return b.createdAt.toMillis() - a.createdAt.toMillis();
+            // Handle both Firebase Timestamp and string dates
+            const aTime = typeof a.createdAt === 'string'
+              ? new Date(a.createdAt).getTime()
+              : (a.createdAt as any).toMillis();
+            const bTime = typeof b.createdAt === 'string'
+              ? new Date(b.createdAt).getTime()
+              : (b.createdAt as any).toMillis();
+            return bTime - aTime;
           }
           return 0;
         });
@@ -36,7 +44,7 @@ export default function BlogsPage() {
         setLoading(false);
       }
     };
-    
+
     fetchArticles();
   }, []);
 
@@ -45,7 +53,7 @@ export default function BlogsPage() {
       setFilteredArticles(articles);
     } else {
       const query = searchQuery.toLowerCase();
-      const filtered = articles.filter(article => 
+      const filtered = articles.filter(article =>
         article.title.toLowerCase().includes(query) ||
         article.description.toLowerCase().includes(query)
       );
@@ -69,26 +77,33 @@ export default function BlogsPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
+
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={[
+          { label: 'Blogs' }
+        ]}
+      />
+
       {/* Hero Section */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full bg-gradient-to-r from-orange-50 via-pink-50 to-purple-50 py-12 sm:py-16 md:py-20"
+        className="w-full bg-gradient-to-br from-green-50 via-white to-emerald-50 py-12 sm:py-16 md:py-20 border-b border-green-100"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="text-center">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4"
             >
               <span className="text-gray-900">Recent</span>{' '}
-              <span className="text-orange-600">News & Articles</span>
+              <span className="text-[#0B453C]">News & Articles</span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -101,7 +116,7 @@ export default function BlogsPage() {
       </motion.div>
 
       {/* Search Bar */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
@@ -109,7 +124,7 @@ export default function BlogsPage() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="max-w-2xl mx-auto">
-            <motion.div 
+            <motion.div
               whileFocus={{ scale: 1.02 }}
               className="relative"
             >
@@ -118,12 +133,12 @@ export default function BlogsPage() {
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-gray-900"
+                className="w-full px-4 py-3 pl-12 border-2 border-green-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B453C] focus:border-[#0B453C] transition-all text-gray-900"
               />
-              <svg 
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -151,18 +166,18 @@ export default function BlogsPage() {
               ))}
             </div>
           ) : filteredArticles.length === 0 ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
               className="text-center py-16"
             >
-              <motion.svg 
+              <motion.svg
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                className="w-24 h-24 mx-auto text-gray-300 mb-4" 
-                fill="none" 
-                stroke="currentColor" 
+                className="w-24 h-24 mx-auto text-green-200 mb-4"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -171,8 +186,8 @@ export default function BlogsPage() {
                 {searchQuery ? 'No articles found' : 'No articles yet'}
               </h3>
               <p className="text-gray-600 mb-6">
-                {searchQuery 
-                  ? 'Try searching with different keywords' 
+                {searchQuery
+                  ? 'Try searching with different keywords'
                   : 'Check back soon for new articles and updates'}
               </p>
               {searchQuery && (
@@ -180,7 +195,7 @@ export default function BlogsPage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSearchQuery('')}
-                  className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+                  className="bg-[#0B453C] hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
                 >
                   Clear Search
                 </motion.button>
@@ -188,7 +203,7 @@ export default function BlogsPage() {
             </motion.div>
           ) : (
             <>
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4 }}
@@ -198,8 +213,8 @@ export default function BlogsPage() {
                   Showing <span className="font-semibold text-gray-900">{filteredArticles.length}</span> of <span className="font-semibold text-gray-900">{articles.length}</span> articles
                 </p>
               </motion.div>
-              
-              <motion.div 
+
+              <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={{
@@ -219,14 +234,14 @@ export default function BlogsPage() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       whileHover={{ y: -8, scale: 1.02 }}
-                      transition={{ 
+                      transition={{
                         duration: 0.4,
                         ease: [0.4, 0, 0.2, 1]
                       }}
-                      className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group border border-gray-100 hover:border-orange-200 flex flex-col"
+                      className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group border border-gray-100 hover:border-green-200 flex flex-col"
                     >
                       {/* Image */}
-                      <motion.div 
+                      <motion.div
                         whileHover={{ scale: 1.05 }}
                         transition={{ duration: 0.3 }}
                         className="relative h-48 sm:h-56 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200"
@@ -242,8 +257,8 @@ export default function BlogsPage() {
                               const parent = target.parentElement;
                               if (parent) {
                                 parent.innerHTML = `
-                                  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-100 to-pink-100">
-                                    <svg class="w-16 h-16 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50">
+                                    <svg class="w-16 h-16 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                   </div>
@@ -252,27 +267,27 @@ export default function BlogsPage() {
                             }}
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-100 to-pink-100">
-                            <svg className="w-16 h-16 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50">
+                            <svg className="w-16 h-16 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                           </div>
                         )}
-                        
+
                         {/* Date Badge */}
                         {formatDate(article.date, article.createdAt) && (
-                          <motion.div 
+                          <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg"
+                            className="absolute top-4 right-4 bg-gradient-to-r from-[#0B453C] to-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg"
                           >
                             {formatDate(article.date, article.createdAt)}
                           </motion.div>
                         )}
-                        
+
                         {/* Gradient Overlay on Hover */}
-                        <motion.div 
+                        <motion.div
                           initial={{ opacity: 0 }}
                           whileHover={{ opacity: 1 }}
                           className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
@@ -282,8 +297,8 @@ export default function BlogsPage() {
                       {/* Content - Flex column with flex-grow for spacing */}
                       <div className="p-6 flex flex-col flex-grow">
                         {/* Title */}
-                        <motion.h3 
-                          whileHover={{ color: '#ea580c' }}
+                        <motion.h3
+                          whileHover={{ color: '#0B453C' }}
                           className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 transition-colors"
                         >
                           {article.title || 'Untitled Article'}
@@ -303,7 +318,7 @@ export default function BlogsPage() {
                             >
                               <Link
                                 href={`/blogs/${article.id}`}
-                                className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg w-full justify-center"
+                                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#0B453C] to-emerald-600 hover:from-emerald-700 hover:to-[#0B453C] text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg w-full justify-center"
                               >
                                 Read More
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -331,8 +346,8 @@ export default function BlogsPage() {
       </div>
 
       {/* Newsletter Subscription */}
-      <NewsletterSubscription />
-      
+      <Newsletter />
+
       {/* Footer */}
       <Footer />
     </div>

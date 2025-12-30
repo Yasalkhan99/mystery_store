@@ -150,7 +150,7 @@ export default function TrendingStores() {
               </div>
 
               {/* Favorite Button */}
-              <button className="absolute top-3 right-3 p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors z-10">
+              <button className="absolute top-3 right-3 p-1.5 rounded-full text-gray-400 hover:text-[#0B453C] hover:bg-green-50 transition-colors z-10">
                 <Heart className="w-4 h-4" />
               </button>
 

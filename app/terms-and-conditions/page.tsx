@@ -2,235 +2,194 @@
 
 import { useEffect } from 'react';
 import Navbar from '@/app/components/Navbar';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
+import Newsletter from '@/app/components/Newsletter';
 import Footer from '@/app/components/Footer';
+import { Shield, FileText, CheckCircle, AlertCircle, Info, BookOpen } from 'lucide-react';
 
 export default function TermsAndConditionsPage() {
   useEffect(() => {
-    document.title = 'Terms and Conditions - AvailCoupon';
+    document.title = 'Terms and Conditions - COUPACHU';
   }, []);
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
-      <div className="w-full px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
-            Terms and Conditions
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
-            Last updated: January 2025
-          </p>
 
-          <div className="prose prose-sm sm:prose-base max-w-none space-y-6 sm:space-y-8">
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                1. Agreement to Terms
-              </h2>
+      <Breadcrumbs items={[{ label: 'Terms and Conditions' }]} />
+
+      {/* Hero Section */}
+      <div className="w-full bg-gradient-to-br from-green-50 via-white to-emerald-50 py-16 sm:py-20 md:py-24 relative overflow-hidden text-center border-b border-green-100">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-green-200/20 rounded-full -mr-48 -mt-48 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-emerald-200/20 rounded-full -ml-36 -mb-36 blur-3xl"></div>
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-[#0B453C] text-sm font-semibold mb-6">
+            <Shield className="w-4 h-4" />
+            <span>Legal Agreement</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+            Terms & <span className="text-[#0B453C]">Conditions</span>
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Please read these terms carefully before using our service. Last updated: January 2025
+          </p>
+        </div>
+      </div>
+
+      <div className="w-full px-4 sm:px-6 md:px-8 py-16 sm:py-20 md:py-24 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="prose prose-sm sm:prose-base max-w-none space-y-12">
+
+            <section className="bg-white border border-green-50 rounded-2xl p-8 sm:p-10 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-[#0B453C]">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 m-0">
+                  1. Agreement to Terms
+                </h2>
+              </div>
               <p className="text-gray-700 leading-relaxed mb-4">
-                By accessing and using AvailCoupon ("the Website"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                By accessing and using COUPACHU ("the Website"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 leading-relaxed m-0">
                 These Terms and Conditions ("Terms") govern your access to and use of our website, services, and applications. By using our services, you agree to comply with and be bound by these Terms.
               </p>
             </section>
 
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                2. Use of the Website
-              </h2>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                2.1 Eligibility
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                You must be at least 18 years old to use this website. By using the website, you represent and warrant that you are at least 18 years of age and have the legal capacity to enter into these Terms.
-              </p>
-              
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                2.2 Acceptable Use
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                You agree to use the website only for lawful purposes and in a way that does not infringe the rights of, restrict, or inhibit anyone else's use and enjoyment of the website. Prohibited behavior includes:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>Harassing, abusing, or harming other users</li>
-                <li>Transmitting any viruses, malware, or malicious code</li>
-                <li>Attempting to gain unauthorized access to the website or its systems</li>
-                <li>Using automated systems to scrape or collect data without permission</li>
-                <li>Impersonating any person or entity</li>
-                <li>Violating any applicable laws or regulations</li>
-              </ul>
-            </section>
+            <section className="bg-white border border-green-50 rounded-2xl p-8 sm:p-10 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-[#0B453C]">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 m-0">
+                  2. Use of the Website
+                </h2>
+              </div>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#0B453C]"></span>
+                    2.1 Eligibility
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed m-0">
+                    You must be at least 18 years old to use this website. By using the website, you represent and warrant that you are at least 18 years of age and have the legal capacity to enter into these Terms.
+                  </p>
+                </div>
 
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                3. Coupon Codes and Deals
-              </h2>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                3.1 Availability
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We strive to provide accurate and up-to-date coupon codes and deals. However, we cannot guarantee that all coupons will be valid, available, or applicable to your purchase. Coupon codes are subject to:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>Expiration dates and time limitations</li>
-                <li>Terms and conditions set by the retailer</li>
-                <li>Geographic restrictions</li>
-                <li>Minimum purchase requirements</li>
-                <li>Product or category exclusions</li>
-              </ul>
-              
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                3.2 No Warranty
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We do not warrant or guarantee that any coupon code will work, be valid, or provide the discount advertised. The validity and applicability of coupon codes are determined solely by the retailers. We are not responsible if a retailer refuses to honor a coupon code.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                4. Intellectual Property
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                All content on this website, including but not limited to text, graphics, logos, images, and software, is the property of AvailCoupon or its content suppliers and is protected by copyright, trademark, and other intellectual property laws.
-              </p>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                You may not:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>Reproduce, distribute, or create derivative works from our content without permission</li>
-                <li>Use our trademarks or logos without written consent</li>
-                <li>Remove any copyright or proprietary notices from our content</li>
-                <li>Use our content for commercial purposes without authorization</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                5. User Accounts
-              </h2>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                5.1 Account Creation
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Some features of our website may require you to create an account. When creating an account, you agree to:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>Provide accurate, current, and complete information</li>
-                <li>Maintain and update your information to keep it accurate</li>
-                <li>Maintain the security of your password and account</li>
-                <li>Accept responsibility for all activities under your account</li>
-                <li>Notify us immediately of any unauthorized use</li>
-              </ul>
-              
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                5.2 Account Termination
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We reserve the right to suspend or terminate your account at any time, with or without notice, for conduct that we believe violates these Terms or is harmful to other users, us, or third parties.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                6. Third-Party Links and Services
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Our website contains links to third-party websites, including retailer websites where you can redeem coupons. These links are provided for your convenience only. We do not:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>Endorse or assume responsibility for third-party websites</li>
-                <li>Control the content, privacy policies, or practices of third-party sites</li>
-                <li>Guarantee the accuracy or completeness of information on third-party sites</li>
-                <li>Have any liability for transactions between you and third-party retailers</li>
-              </ul>
-              <p className="text-gray-700 leading-relaxed">
-                Your interactions with third-party retailers are solely between you and the retailer. We are not responsible for any disputes, issues, or transactions that arise from your use of third-party services.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                7. Disclaimers and Limitations of Liability
-              </h2>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                7.1 No Warranties
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                THE WEBSITE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
-              </p>
-              
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
-                7.2 Limitation of Liability
-              </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                TO THE MAXIMUM EXTENT PERMITTED BY LAW, AVAILCOUPON SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                8. Indemnification
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                You agree to indemnify, defend, and hold harmless AvailCoupon, its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses, including reasonable attorneys' fees, arising out of or in any way connected with:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
-                <li>Your use of the website</li>
-                <li>Your violation of these Terms</li>
-                <li>Your violation of any rights of another party</li>
-                <li>Your violation of any applicable laws or regulations</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                9. Modifications to Terms
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                We reserve the right to modify these Terms at any time. We will notify users of any material changes by posting the updated Terms on this page and updating the "Last updated" date. Your continued use of the website after such modifications constitutes your acceptance of the updated Terms.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                10. Governing Law and Dispute Resolution
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                These Terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law provisions. Any disputes arising out of or relating to these Terms or the website shall be resolved through binding arbitration or in the appropriate courts.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                11. Severability
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                If any provision of these Terms is found to be unenforceable or invalid, that provision shall be limited or eliminated to the minimum extent necessary, and the remaining provisions shall remain in full force and effect.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                12. Contact Information
-              </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                If you have any questions about these Terms and Conditions, please contact us at:
-              </p>
-              <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
-                <p className="text-gray-700 mb-2">
-                  <strong>Email:</strong> legal@availcoupon.com
-                </p>
-                <p className="text-gray-700">
-                  <strong>Website:</strong> www.availcoupon.com
-                </p>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#0B453C]"></span>
+                    2.2 Acceptable Use
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    You agree to use the website only for lawful purposes and in a way that does not infringe the rights of, restrict, or inhibit anyone else's use and enjoyment of the website. Prohibited behavior includes:
+                  </p>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 m-0 p-0 text-gray-700 list-none">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>Legal compliance only</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>No harassment or harm</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>No unauthorized scraping</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>No impersonation</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </section>
+
+            <section className="bg-white border border-green-50 rounded-2xl p-8 sm:p-10 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-[#0B453C]">
+                  <Info className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 m-0">
+                  3. Coupon Codes and Deals
+                </h2>
+              </div>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#0B453C]"></span>
+                    3.1 Availability
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed m-0">
+                    We strive to provide accurate and up-to-date coupon codes and deals. However, we cannot guarantee that all coupons will be valid, available, or applicable to your purchase.
+                  </p>
+                </div>
+
+                <div className="bg-emerald-50 rounded-xl p-6 border-l-4 border-[#0B453C]">
+                  <h3 className="text-xl font-bold text-[#0B453C] mb-3 flex items-center gap-2 m-0">
+                    <AlertCircle className="w-5 h-5" />
+                    3.2 No Warranty
+                  </h3>
+                  <p className="text-[#0B453C]/80 leading-relaxed m-0 mt-3 font-medium">
+                    We do not warrant or guarantee that any coupon code will work, be valid, or provide the discount advertised. The validity and applicability of coupon codes are determined solely by the retailers.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Rest of the sections following the same pattern */}
+            <section className="bg-white border border-green-50 rounded-2xl p-8 sm:p-10 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-[#0B453C]">
+                  <Shield className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 m-0">
+                  4. Intellectual Property
+                </h2>
+              </div>
+              <p className="text-gray-700 leading-relaxed m-0">
+                All content on this website, including but not limited to text, graphics, logos, images, and software, is the property of COUPACHU or its content suppliers and is protected by copyright, trademark, and other intellectual property laws.
+              </p>
+            </section>
+
+            <section className="bg-[#0B453C] rounded-2xl p-8 sm:p-12 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mt-24"></div>
+              <div className="relative z-10">
+                <h2 className="text-3xl font-bold mb-6">Need Legal Help?</h2>
+                <p className="text-green-100 text-lg mb-8 max-w-xl">
+                  If you have any questions about these Terms and Conditions or our practices, please reach out to our legal support team.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                      <Shield className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-green-300 text-sm font-medium">Email Support</p>
+                      <p className="font-bold">legal@COUPACHU.com</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                      <FileText className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-green-300 text-sm font-medium">Our Website</p>
+                      <p className="font-bold">www.COUPACHU.com</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
           </div>
         </div>
       </div>
 
+      <Newsletter />
       <Footer />
     </div>
   );

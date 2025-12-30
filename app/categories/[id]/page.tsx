@@ -8,14 +8,16 @@ import { getCouponsByCategoryId, Coupon } from '@/lib/services/couponService';
 import { addNotification } from '@/lib/services/notificationsService';
 import Navbar from '@/app/components/Navbar';
 import Footer from '@/app/components/Footer';
-import NewsletterSubscription from '@/app/components/NewsletterSubscription';
+import Newsletter from '@/app/components/Newsletter';
 import CouponPopup from '@/app/components/CouponPopup';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
+import { Tag, CheckCircle, Calendar, ExternalLink, ArrowRight, Info } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CategoryDetailPage() {
   const params = useParams();
   const categoryId = params.id as string;
-  
+
   const [category, setCategory] = useState<Category | null>(null);
   const [stores, setStores] = useState<Store[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -33,7 +35,7 @@ export default function CategoryDetailPage() {
           getStoresByCategoryId(categoryId),
           getCouponsByCategoryId(categoryId),
         ]);
-        
+
         setCategory(categoryData);
         setStores(storesData);
         setCoupons(couponsData);
@@ -83,22 +85,22 @@ export default function CategoryDetailPage() {
       e.preventDefault();
       e.stopPropagation();
     }
-    
+
     // Copy code to clipboard FIRST (before showing popup)
     if (coupon.code) {
       const codeToCopy = coupon.code.trim();
       copyToClipboard(codeToCopy);
     }
-    
+
     // Mark coupon as revealed
     if (coupon.id) {
       setRevealedCoupons(prev => new Set(prev).add(coupon.id!));
     }
-    
+
     // Show popup
     setSelectedCoupon(coupon);
     setShowPopup(true);
-    
+
     // Automatically open URL in new tab after a short delay (to ensure popup is visible first)
     if (coupon.url && coupon.url.trim()) {
       setTimeout(() => {
@@ -147,15 +149,15 @@ export default function CategoryDetailPage() {
       textArea.style.top = '0';
       textArea.style.opacity = '0';
       textArea.style.pointerEvents = 'none';
-      
+
       document.body.appendChild(textArea);
       textArea.focus();
       textArea.select();
       textArea.setSelectionRange(0, 99999);
-      
+
       const successful = document.execCommand('copy');
       document.body.removeChild(textArea);
-      
+
       if (successful) {
         addNotification({
           title: 'Code Copied!',
@@ -198,7 +200,7 @@ export default function CategoryDetailPage() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-800 mb-2">Category Not Found</h1>
-            <Link href="/categories" className="text-pink-600 hover:underline">
+            <Link href="/categories" className="text-[#0B453C] hover:underline">
               Back to Categories
             </Link>
           </div>
@@ -211,9 +213,17 @@ export default function CategoryDetailPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
+
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={[
+          { label: 'Categories', href: '/categories' },
+          { label: category?.name || 'Category' }
+        ]}
+      />
+
       {/* Category Header */}
-      <div className="w-full bg-gradient-to-r from-pink-50 to-orange-50 py-4 sm:py-6 md:py-8">
+      <div className="w-full bg-gradient-to-br from-green-50 via-white to-emerald-50 py-8 sm:py-12 md:py-16 border-b border-green-100">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
           <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
             <div
@@ -282,11 +292,11 @@ export default function CategoryDetailPage() {
                         </span>
                       </div>
                     )}
-                    <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-gray-800 mb-1 sm:mb-2 group-hover:text-pink-600 transition-colors line-clamp-2">
+                    <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-gray-800 mb-1 sm:mb-2 group-hover:text-[#0B453C] transition-colors line-clamp-2">
                       {store.name}
                     </h3>
                     {store.voucherText && (
-                      <p className="text-xs sm:text-sm text-pink-600 font-medium line-clamp-1">{store.voucherText}</p>
+                      <p className="text-xs sm:text-sm text-emerald-600 font-medium line-clamp-1">{store.voucherText}</p>
                     )}
                     {store.description && (
                       <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 line-clamp-2 hidden sm:block">{store.description}</p>
@@ -305,8 +315,8 @@ export default function CategoryDetailPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {coupons.map((coupon) => {
                 const isRevealed = coupon.id && revealedCoupons.has(coupon.id);
-                const isExpired = coupon.expiryDate && coupon.expiryDate.toDate() < new Date();
-                
+                const isExpired = coupon.expiryDate && new Date(coupon.expiryDate as any) < new Date();
+
                 return (
                   <div
                     key={coupon.id}
@@ -341,7 +351,7 @@ export default function CategoryDetailPage() {
                       {!isExpired && (
                         <button
                           onClick={(e) => handleGetDeal(coupon, e)}
-                          className="w-full bg-gradient-to-r from-pink-500 via-pink-400 to-orange-500 border-2 border-dashed border-white/60 rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between text-white font-semibold hover:from-pink-600 hover:via-pink-500 hover:to-orange-600 hover:border-white/80 transition-all duration-300 group relative overflow-hidden shadow-md hover:shadow-lg text-xs sm:text-sm md:text-base"
+                          className="w-full bg-gradient-to-r from-[#0B453C] to-emerald-600 border-2 border-dashed border-white/60 rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between text-white font-semibold hover:from-emerald-700 hover:to-[#0B453C] hover:border-white/80 transition-all duration-300 group relative overflow-hidden shadow-md hover:shadow-lg text-xs sm:text-sm md:text-base"
                           style={{ borderStyle: 'dashed', borderWidth: '2px' }}
                         >
                           <span className="flex-1 flex items-center justify-center">
@@ -352,7 +362,7 @@ export default function CategoryDetailPage() {
                             )}
                           </span>
                           {getLastTwoDigits(coupon) && !isRevealed && (
-                            <div className="w-0 opacity-0 group-hover:w-20 group-hover:opacity-100 transition-all duration-300 ease-out flex items-center justify-center border-l-2 border-dashed border-white/70 ml-2 pl-2 whitespace-nowrap overflow-hidden bg-gradient-to-r from-transparent to-orange-600/20" style={{ borderStyle: 'dashed' }}>
+                            <div className="w-0 opacity-0 group-hover:w-20 group-hover:opacity-100 transition-all duration-300 ease-out flex items-center justify-center border-l-2 border-dashed border-white/70 ml-2 pl-2 whitespace-nowrap overflow-hidden bg-gradient-to-r from-transparent to-emerald-800/20" style={{ borderStyle: 'dashed' }}>
                               <span className="text-white font-bold text-xs drop-shadow-md">...{getLastTwoDigits(coupon)}</span>
                             </div>
                           )}
@@ -383,7 +393,7 @@ export default function CategoryDetailPage() {
         {stores.length === 0 && coupons.length === 0 && (
           <div className="text-center py-6 sm:py-8 md:py-12">
             <p className="text-gray-600 text-sm sm:text-base md:text-lg">No stores or coupons found for this category.</p>
-            <Link href="/categories" className="text-pink-600 hover:underline mt-2 sm:mt-4 inline-block text-sm sm:text-base">
+            <Link href="/categories" className="text-[#0B453C] hover:underline mt-2 sm:mt-4 inline-block text-sm sm:text-base">
               Browse All Categories
             </Link>
           </div>
@@ -391,8 +401,8 @@ export default function CategoryDetailPage() {
       </div>
 
       {/* Newsletter Subscription */}
-      <NewsletterSubscription />
-      
+      <Newsletter />
+
       {/* Footer */}
       <Footer />
 

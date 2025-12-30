@@ -5,9 +5,11 @@ import Image from 'next/image';
 import { getBannerByLayoutPosition, Banner } from '@/lib/services/bannerService';
 import { getActiveFAQs, FAQ } from '@/lib/services/faqService';
 import Navbar from '@/app/components/Navbar';
-import NewsletterSubscription from '@/app/components/NewsletterSubscription';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
+import Newsletter from '@/app/components/Newsletter';
 import Footer from '@/app/components/Footer';
 import ContactSupportModal from '@/app/components/ContactSupportModal';
+import { HelpCircle, MessageCircle, ChevronDown, CheckCircle, Search } from 'lucide-react';
 
 export default function FAQsPage() {
   const [banner11, setBanner11] = useState<Banner | null>(null);
@@ -18,8 +20,8 @@ export default function FAQsPage() {
 
   useEffect(() => {
     // Set page title
-    document.title = 'FAQs - AvailCoupon';
-    
+    document.title = 'FAQs - COUPACHU';
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -45,7 +47,7 @@ export default function FAQsPage() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden w-full">
       <Navbar />
-      
+
       {/* Banner Section with Layout 11 */}
       <div className="w-full">
         {loading ? (
@@ -86,6 +88,13 @@ export default function FAQsPage() {
         )}
       </div>
 
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={[
+          { label: 'FAQs' }
+        ]}
+      />
+
       {/* FAQs Section */}
       <div className="w-full px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16 bg-white overflow-x-hidden">
         <div className="max-w-4xl mx-auto w-full">
@@ -110,35 +119,23 @@ export default function FAQsPage() {
                   {/* Question */}
                   <button
                     onClick={() => toggleFAQ(index)}
-                    className="w-full px-4 sm:px-6 py-4 sm:py-5 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg"
+                    className="w-full px-4 sm:px-6 py-4 sm:py-5 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#0B453C] focus:ring-offset-2 rounded-lg group"
                   >
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 pr-4 flex-1">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 pr-4 flex-1 group-hover:text-[#0B453C] transition-colors">
                       {faq.question}
                     </h3>
                     <div className="flex-shrink-0">
-                      <svg
-                        className={`w-5 h-5 sm:w-6 sm:h-6 text-orange-600 transition-transform duration-300 ${
-                          openIndex === index ? 'transform rotate-180' : ''
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
+                      <ChevronDown
+                        className={`w-5 h-5 sm:w-6 sm:h-6 text-[#0B453C] transition-transform duration-300 ${openIndex === index ? 'transform rotate-180' : ''
+                          }`}
+                      />
                     </div>
                   </button>
 
                   {/* Answer */}
                   <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      openIndex === index ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
-                    }`}
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                      }`}
                   >
                     <div className="px-4 sm:px-6 pb-4 sm:pb-5 pt-0">
                       <div className="pt-4 border-t border-gray-100">
@@ -154,33 +151,39 @@ export default function FAQsPage() {
           )}
 
           {/* Additional Help Section */}
-          <div className="mt-12 sm:mt-16 bg-gradient-to-r from-orange-50 via-pink-50 to-purple-50 rounded-lg p-6 sm:p-8 text-center">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-              Still have questions?
-            </h3>
-            <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
-              Can't find the answer you're looking for? Please contact our support team.
-            </p>
-            <button
-              onClick={() => setIsContactModalOpen(true)}
-              className="inline-block px-6 sm:px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Contact Support
-            </button>
+          <div className="mt-12 sm:mt-16 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 sm:p-12 text-center border border-green-100 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-200/20 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+            <div className="relative z-10">
+              <div className="w-16 h-16 bg-[#0B453C]/10 rounded-2xl flex items-center justify-center text-[#0B453C] mx-auto mb-6">
+                <HelpCircle className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                Still have questions?
+              </h3>
+              <p className="text-gray-600 text-lg mb-8 max-w-xl mx-auto">
+                Can't find the answer you're looking for? Our friendly support team is here to help you get the most out of COUPACHU.
+              </p>
+              <button
+                onClick={() => setIsContactModalOpen(true)}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#0B453C] to-emerald-700 text-white font-bold rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+              >
+                <MessageCircle className="w-5 h-5" />
+                Contact Support
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      
-      {/* Newsletter Subscription Section */}
-      <NewsletterSubscription />
-      
+
+      <Newsletter />
+
       {/* Footer */}
       <Footer />
 
       {/* Contact Support Modal */}
-      <ContactSupportModal 
-        isOpen={isContactModalOpen} 
-        onClose={() => setIsContactModalOpen(false)} 
+      <ContactSupportModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
       />
     </div>
   );

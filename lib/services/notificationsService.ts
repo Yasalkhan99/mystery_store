@@ -11,12 +11,12 @@ export interface Notification {
   link?: string; // Optional link to navigate
 }
 
-const NOTIFICATIONS_KEY = 'availcoupon_notifications';
+const NOTIFICATIONS_KEY = 'coupachu_notifications';
 
 // Get all notifications
 export function getNotifications(): Notification[] {
   if (typeof window === 'undefined') return [];
-  
+
   try {
     const stored = localStorage.getItem(NOTIFICATIONS_KEY);
     return stored ? JSON.parse(stored) : [];
@@ -29,7 +29,7 @@ export function getNotifications(): Notification[] {
 // Add notification
 export function addNotification(notification: Omit<Notification, 'id' | 'createdAt' | 'read'>): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     const notifications = getNotifications();
     const newNotification: Notification = {
@@ -38,13 +38,13 @@ export function addNotification(notification: Omit<Notification, 'id' | 'created
       read: false,
       createdAt: Date.now()
     };
-    
+
     notifications.unshift(newNotification); // Add to beginning
-    
+
     // Keep only last 50 notifications
     const limited = notifications.slice(0, 50);
     localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(limited));
-    
+
     // Dispatch custom event for real-time updates
     window.dispatchEvent(new CustomEvent('notificationAdded', { detail: newNotification }));
   } catch (error) {
@@ -55,14 +55,14 @@ export function addNotification(notification: Omit<Notification, 'id' | 'created
 // Mark notification as read
 export function markAsRead(notificationId: string): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     const notifications = getNotifications();
-    const updated = notifications.map(n => 
+    const updated = notifications.map(n =>
       n.id === notificationId ? { ...n, read: true } : n
     );
     localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(updated));
-    
+
     window.dispatchEvent(new CustomEvent('notificationUpdated'));
   } catch (error) {
     console.error('Error marking notification as read:', error);
@@ -72,12 +72,12 @@ export function markAsRead(notificationId: string): void {
 // Mark all as read
 export function markAllAsRead(): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     const notifications = getNotifications();
     const updated = notifications.map(n => ({ ...n, read: true }));
     localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(updated));
-    
+
     window.dispatchEvent(new CustomEvent('notificationUpdated'));
   } catch (error) {
     console.error('Error marking all as read:', error);
@@ -87,12 +87,12 @@ export function markAllAsRead(): void {
 // Delete notification
 export function deleteNotification(notificationId: string): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     const notifications = getNotifications();
     const filtered = notifications.filter(n => n.id !== notificationId);
     localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(filtered));
-    
+
     window.dispatchEvent(new CustomEvent('notificationUpdated'));
   } catch (error) {
     console.error('Error deleting notification:', error);
@@ -108,11 +108,11 @@ export function getUnreadCount(): number {
 // Initialize with sample notifications (optional)
 export function initializeSampleNotifications(): void {
   if (typeof window === 'undefined') return;
-  
+
   const existing = getNotifications();
   if (existing.length === 0) {
     addNotification({
-      title: 'Welcome to AvailCoupon!',
+      title: 'Welcome to COUPACHU!',
       message: 'Discover amazing deals and save money with our exclusive coupons.',
       type: 'info'
     });

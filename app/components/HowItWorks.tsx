@@ -9,8 +9,8 @@ export default function HowItWorks() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
       ),
-      iconBg: 'bg-yellow-100',
-      iconColor: 'text-amber-800',
+      iconBg: 'bg-green-100',
+      iconColor: 'text-[#0B453C]',
       title: 'Log In & Shop',
       description: 'Click to select your favorite coupon, explore amazing deals, and start shopping.',
     },
@@ -21,8 +21,8 @@ export default function HowItWorks() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-700',
+      iconBg: 'bg-emerald-100',
+      iconColor: 'text-emerald-700',
       title: 'Get Rewards',
       description: 'Cashback rewards are instantly added to your wallet, ready for future use.',
     },
@@ -35,8 +35,8 @@ export default function HowItWorks() {
           <circle cx="16" cy="15" r="1" fill="currentColor" />
         </svg>
       ),
-      iconBg: 'bg-yellow-100',
-      iconColor: 'text-amber-800',
+      iconBg: 'bg-teal-100',
+      iconColor: 'text-teal-800',
       title: 'Withdraw Cashback',
       description: 'Cashback gets added to your bank account, or as a voucher or recharge option instantly.',
     },

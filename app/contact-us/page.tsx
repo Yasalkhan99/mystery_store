@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Navbar from '@/app/components/Navbar';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
+import Newsletter from '@/app/components/Newsletter';
 import Footer from '@/app/components/Footer';
+import { Mail, Clock, MapPin, Send, CheckCircle, AlertCircle, Phone, Globe, MessageSquare, User, AtSign, Type } from 'lucide-react';
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
@@ -18,7 +21,7 @@ export default function ContactUsPage() {
   });
 
   useEffect(() => {
-    document.title = 'Contact Us - AvailCoupon';
+    document.title = 'Contact Us - COUPACHU';
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -30,7 +33,7 @@ export default function ContactUsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
       setSubmitStatus({
@@ -96,285 +99,188 @@ export default function ContactUsPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
+
+      <Breadcrumbs items={[{ label: 'Contact Us' }]} />
+
       {/* Hero Section */}
-      <div className="w-full bg-gradient-to-r from-orange-50 via-pink-50 to-purple-50 py-12 sm:py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4">
-            Contact <span className="text-orange-600">Us</span>
+      <div className="w-full bg-gradient-to-br from-green-50 via-white to-emerald-50 py-16 sm:py-20 md:py-24 relative overflow-hidden">
+        {/* Decorative Circles */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-green-200/20 rounded-full -mr-48 -mt-48 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-emerald-200/20 rounded-full -ml-36 -mb-36 blur-3xl"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-[#0B453C] text-sm font-semibold mb-6">
+            <MessageSquare className="w-4 h-4" />
+            <span>24/7 Support Support</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+            Get in <span className="text-[#0B453C]">Touch</span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-            Have a question or need help? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Have a question about a deal or need technical help? Our team of experts is ready to assist you.
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="w-full px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Contact Information */}
-            <div className="space-y-8">
+      <div className="w-full px-4 sm:px-6 md:px-8 py-12 sm:py-20 bg-white">
+        <div className="max-w-4xl mx-auto">
+
+          {/* Minimalist Contact Info Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+            <div className="group flex items-center gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100 hover:border-[#0B453C]/20 hover:bg-white hover:shadow-xl transition-all duration-300">
+              <div className="w-10 h-10 bg-[#0B453C] rounded-xl flex items-center justify-center text-white">
+                <Mail className="w-5 h-5" />
+              </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-                  Get in Touch
-                </h2>
-                <p className="text-gray-600 mb-8 leading-relaxed">
-                  We're here to help! Whether you have a question about our coupons, need assistance with your account, or want to provide feedback, we're ready to assist you.
-                </p>
-              </div>
-
-              {/* Contact Cards */}
-              <div className="space-y-6">
-                {/* Email Card */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-pink-500 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">Email Us</h3>
-                      <p className="text-gray-600 mb-2">Send us an email anytime</p>
-                      <a href="mailto:contact@availcouponcode.com" className="text-orange-600 hover:text-orange-700 font-medium">
-                        contact@availcouponcode.com
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Response Time Card */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-500 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">Response Time</h3>
-                      <p className="text-gray-600 mb-2">We typically respond within</p>
-                      <p className="text-orange-600 font-medium">24-48 hours</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Support Hours Card */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">Support Hours</h3>
-                      <p className="text-gray-600 mb-2">Monday - Friday</p>
-                      <p className="text-orange-600 font-medium">9:00 AM - 6:00 PM</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Additional Info */}
-              <div className="bg-gradient-to-br from-orange-50 to-pink-50 rounded-xl p-6 border border-orange-100">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Why Contact Us?</h3>
-                <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-start gap-2">
-                    <svg className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Questions about coupon codes or deals</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <svg className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Technical support or account issues</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <svg className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Partnership or business inquiries</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <svg className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Feedback and suggestions</span>
-                  </li>
-                </ul>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Email Us</p>
+                <p className="text-sm font-bold text-[#0B453C]">contact@COUPACHU.com</p>
               </div>
             </div>
 
-            {/* Contact Form */}
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 sm:p-8">
-              <div className="mb-6">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                  Send us a Message
-                </h2>
-                <p className="text-gray-600">
-                  Fill out the form below and we'll get back to you as soon as possible.
-                </p>
+            <div className="group flex items-center gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100 hover:border-[#0B453C]/20 hover:bg-white hover:shadow-xl transition-all duration-300">
+              <div className="w-10 h-10 bg-[#0B453C] rounded-xl flex items-center justify-center text-white">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Response Time</p>
+                <p className="text-sm font-bold text-[#0B453C]">24-48 Hours</p>
+              </div>
+            </div>
+
+            <div className="group flex items-center gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100 hover:border-[#0B453C]/20 hover:bg-white hover:shadow-xl transition-all duration-300">
+              <div className="w-10 h-10 bg-[#0B453C] rounded-xl flex items-center justify-center text-white">
+                <Globe className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Availability</p>
+                <p className="text-sm font-bold text-[#0B453C]">Everyday 24/7</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Centered Narrow Form Card */}
+          <div className="max-w-xl mx-auto">
+            <div className="bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_30px_70px_rgba(0,0,0,0.08)] p-8 sm:p-12 relative overflow-hidden">
+              {/* Top Accent Line */}
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0B453C] via-emerald-400 to-[#0B453C]"></div>
+
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">Send us a Message</h2>
+                <p className="text-gray-500 font-medium">We'd love to hear from you!</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Name */}
-                <div>
-                  <label 
-                    htmlFor="name" 
-                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2"
-                  >
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white"
-                    placeholder="John Doe"
-                  />
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label 
-                    htmlFor="email" 
-                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2"
-                  >
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white"
-                    placeholder="john@example.com"
-                  />
-                </div>
-
-                {/* Subject */}
-                <div>
-                  <label 
-                    htmlFor="subject" 
-                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2"
-                  >
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                    </svg>
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all bg-gray-50 focus:bg-white"
-                    placeholder="What is this regarding?"
-                  />
-                </div>
-
-                {/* Message */}
-                <div>
-                  <label 
-                    htmlFor="message" 
-                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2"
-                  >
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Message <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-400 resize-none transition-all bg-gray-50 focus:bg-white"
-                    placeholder="Tell us how we can help..."
-                  />
-                </div>
-
-                {/* Status Message */}
-                {submitStatus.message && (
-                  <div
-                    className={`p-4 rounded-xl flex items-start gap-3 ${
-                      submitStatus.type === 'success'
-                        ? 'bg-green-50 border border-green-200 text-green-800'
-                        : 'bg-red-50 border border-red-200 text-red-800'
-                    }`}
-                  >
-                    <div>
-                      {submitStatus.type === 'success' ? (
-                        <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      ) : (
-                        <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      )}
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label htmlFor="name" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#0B453C] transition-colors duration-300">
+                      <User className="w-4 h-4" />
                     </div>
-                    <span className="text-sm">{submitStatus.message}</span>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0B453C]/10 focus:border-[#0B453C] focus:bg-white transition-all duration-300 text-gray-900 font-semibold text-sm"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="email" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#0B453C] transition-colors duration-300">
+                      <AtSign className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0B453C]/10 focus:border-[#0B453C] focus:bg-white transition-all duration-300 text-gray-900 font-semibold text-sm"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="subject" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Subject</label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#0B453C] transition-colors duration-300">
+                      <Type className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0B453C]/10 focus:border-[#0B453C] focus:bg-white transition-all duration-300 text-gray-900 font-semibold text-sm"
+                      placeholder="What is this regarding?"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="message" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Message</label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-5 text-gray-300 group-focus-within:text-[#0B453C] transition-colors duration-300">
+                      <MessageSquare className="w-4 h-4" />
+                    </div>
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={4}
+                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0B453C]/10 focus:border-[#0B453C] focus:bg-white transition-all duration-300 text-gray-900 font-semibold text-sm resize-none"
+                      placeholder="Tell us how we can help..."
+                    />
+                  </div>
+                </div>
+
+                {/* Status Messages */}
+                {submitStatus.message && (
+                  <div className={`p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-500 ${submitStatus.type === 'success' ? 'bg-green-50 text-[#0B453C] border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
+                    }`}>
+                    {submitStatus.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                    <span className="font-bold text-xs sm:text-sm">{submitStatus.message}</span>
                   </div>
                 )}
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full px-6 py-3.5 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:from-orange-600 hover:to-pink-600"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg 
-                        className="h-5 w-5 text-white animate-spin" 
-                        fill="none" 
-                        viewBox="0 0 24 24"
-                      >
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <svg 
-                        className="w-5 h-5" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                      </svg>
-                      Send Message
-                    </>
-                  )}
-                </button>
+                <div className="pt-4">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-4 bg-[#0B453C] hover:bg-[#093a32] text-white font-extrabold rounded-2xl shadow-xl shadow-[#0B453C]/10 hover:shadow-2xl hover:shadow-[#0B453C]/20 hover:-translate-y-1 transition-all duration-500 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3 group overflow-hidden relative"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="relative z-10">Send Message</span>
+                        <Send className="w-4 h-4 relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-[#0B453C] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      </>
+                    )}
+                  </button>
+                </div>
               </form>
             </div>
           </div>
         </div>
       </div>
-
+      <Newsletter />
       <Footer />
     </div>
   );

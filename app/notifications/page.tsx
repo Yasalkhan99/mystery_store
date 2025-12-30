@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getNotifications, markAsRead, markAllAsRead, deleteNotification, Notification } from '@/lib/services/notificationsService';
 import Navbar from '@/app/components/Navbar';
-import NewsletterSubscription from '@/app/components/NewsletterSubscription';
+import Newsletter from '@/app/components/Newsletter';
 import Footer from '@/app/components/Footer';
 
 export default function NotificationsPage() {
@@ -12,14 +12,14 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = 'Notifications - AvailCoupon';
+    document.title = 'Notifications - COUPACHU';
     loadNotifications();
-    
+
     // Listen for updates
     const handleUpdate = () => loadNotifications();
     window.addEventListener('notificationUpdated', handleUpdate);
     window.addEventListener('notificationAdded', handleUpdate);
-    
+
     return () => {
       window.removeEventListener('notificationUpdated', handleUpdate);
       window.removeEventListener('notificationAdded', handleUpdate);
@@ -55,7 +55,7 @@ export default function NotificationsPage() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden w-full">
       <Navbar />
-      
+
       {/* Notifications Section */}
       <div className="w-full px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16 bg-white overflow-x-hidden">
         <div className="max-w-4xl mx-auto w-full">
@@ -73,7 +73,7 @@ export default function NotificationsPage() {
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
-                className="px-4 py-2 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 transition-colors"
+                className="px-4 py-2 bg-[#0B453C] text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition-colors"
               >
                 Mark All Read
               </button>
@@ -96,18 +96,17 @@ export default function NotificationsPage() {
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${
-                    notification.read
+                  className={`bg-white border rounded-lg p-4 sm:p-6 transition-all duration-200 ${notification.read
                       ? 'border-gray-200'
-                      : 'border-orange-300 bg-orange-50'
-                  }`}
+                      : 'border-green-300 bg-green-50'
+                    }`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-semibold text-gray-900">{notification.title}</h3>
                         {!notification.read && (
-                          <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                          <span className="w-2 h-2 bg-[#0B453C] rounded-full"></span>
                         )}
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
@@ -117,7 +116,7 @@ export default function NotificationsPage() {
                       {notification.link && (
                         <Link
                           href={notification.link}
-                          className="inline-block mt-2 text-sm text-orange-600 hover:text-orange-700 font-semibold"
+                          className="inline-block mt-2 text-sm text-emerald-700 hover:text-[#0B453C] font-semibold"
                         >
                           View →
                         </Link>
@@ -152,8 +151,8 @@ export default function NotificationsPage() {
           )}
         </div>
       </div>
-      
-      <NewsletterSubscription />
+
+      <Newsletter />
       <Footer />
     </div>
   );

@@ -47,7 +47,7 @@ export async function getLogos(): Promise<Logo[]> {
   try {
     const { data, error } = await supabase
       .from('stores')
-      .select('id, store_name, store_logo_url, website_url, created_at, updated_at')
+      .select('id, store_name, store_logo_url, website_url, layout_position, created_at, updated_at')
       .not('store_logo_url', 'is', null)
       .order('created_at', { ascending: false })
 
@@ -56,12 +56,12 @@ export async function getLogos(): Promise<Logo[]> {
       return []
     }
 
-    return (data || []).map((item: any, index: number) => ({
+    return (data || []).map((item: any) => ({
       id: item.id,
-      name: item.store_name,
-      logoUrl: item.store_logo_url,
+      name: item.store_name || 'Unknown',
+      logoUrl: item.store_logo_url || '',
       websiteUrl: item.website_url,
-      layoutPosition: index + 1,
+      layoutPosition: item.layout_position,
       createdAt: item.created_at,
       updatedAt: item.updated_at,
     }))
@@ -75,7 +75,7 @@ export async function getLogoById(id: string): Promise<Logo | null> {
   try {
     const { data, error } = await supabase
       .from('stores')
-      .select('id, store_name, store_logo_url, website_url, created_at, updated_at')
+      .select('id, store_name, store_logo_url, website_url, layout_position, created_at, updated_at')
       .eq('id', id)
       .single()
 
@@ -86,10 +86,10 @@ export async function getLogoById(id: string): Promise<Logo | null> {
 
     return {
       id: data.id,
-      name: data.store_name,
+      name: data.store_name || '',
       logoUrl: data.store_logo_url || '',
       websiteUrl: data.website_url,
-      layoutPosition: null,
+      layoutPosition: data.layout_position,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     }
@@ -101,12 +101,15 @@ export async function getLogoById(id: string): Promise<Logo | null> {
 
 export async function getLogosWithLayout(): Promise<(Logo | null)[]> {
   try {
+    // Fetch logos that have a logo URL
+    // We fetch more than 18 to ensure we have enough to fill slots even if some don't have layout_position
     const { data, error } = await supabase
       .from('stores')
-      .select('id, store_name, store_logo_url, website_url, created_at, updated_at')
+      .select('id, store_name, store_logo_url, website_url, layout_position, created_at, updated_at')
       .not('store_logo_url', 'is', null)
+      .order('layout_position', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
-      .limit(18)
+      .limit(50)
 
     if (error) {
       console.error('Error getting logos with layout:', error)
@@ -114,19 +117,41 @@ export async function getLogosWithLayout(): Promise<(Logo | null)[]> {
     }
 
     const layoutSlots: (Logo | null)[] = Array(18).fill(null)
-      ; (data || []).forEach((item: any, index: number) => {
-        if (index < 18) {
-          layoutSlots[index] = {
-            id: item.id,
-            name: item.store_name,
-            logoUrl: item.store_logo_url || '',
-            websiteUrl: item.website_url,
-            layoutPosition: index + 1,
-            createdAt: item.created_at,
-            updatedAt: item.updated_at,
-          }
+    const extraLogos: Logo[] = []
+
+    // Map the fetched data to Logo objects
+    const allFetchedLogos: Logo[] = (data || []).map((item: any) => ({
+      id: item.id,
+      name: item.store_name || '',
+      logoUrl: item.store_logo_url || '',
+      websiteUrl: item.website_url,
+      layoutPosition: item.layout_position,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+    }))
+
+    // First pass: Fill assigned positions
+    allFetchedLogos.forEach(logo => {
+      if (logo.layoutPosition && logo.layoutPosition >= 1 && logo.layoutPosition <= 18) {
+        // Only fill if slot is empty (should be true due to our ordering and logic)
+        if (!layoutSlots[logo.layoutPosition - 1]) {
+          layoutSlots[logo.layoutPosition - 1] = logo
+        } else {
+          extraLogos.push(logo)
         }
-      })
+      } else {
+        extraLogos.push(logo)
+      }
+    })
+
+    // Second pass: Fill empty slots with extra logos
+    let extraIndex = 0
+    for (let i = 0; i < 18; i++) {
+      if (!layoutSlots[i] && extraIndex < extraLogos.length) {
+        layoutSlots[i] = extraLogos[extraIndex]
+        extraIndex++
+      }
+    }
 
     return layoutSlots
   } catch (error) {
@@ -142,8 +167,9 @@ export async function updateLogo(id: string, updates: Partial<Logo>) {
     }
 
     if (updates.name) updateData.store_name = updates.name
-    if (updates.logoUrl) updateData.store_logo_url = updates.logoUrl
-    if (updates.websiteUrl) updateData.website_url = updates.websiteUrl
+    if (updates.logoUrl !== undefined) updateData.store_logo_url = updates.logoUrl
+    if (updates.websiteUrl !== undefined) updateData.website_url = updates.websiteUrl
+    if (updates.layoutPosition !== undefined) updateData.layout_position = updates.layoutPosition
 
     const { error } = await supabase
       .from('stores')

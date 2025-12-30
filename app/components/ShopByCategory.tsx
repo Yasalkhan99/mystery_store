@@ -83,8 +83,8 @@ export default function ShopByCategory() {
                 <ScrollContainer>
                     {categories.map((cat, index) => {
                         const isEven = index % 2 === 0;
-                        const bgClass = isEven ? "bg-[#FFF0EB]" : "bg-[#E8F3F1]";
-                        const iconColorClass = isEven ? "text-[#E85D4E]" : "text-[#0B453C]";
+                        const bgClass = isEven ? "bg-green-50" : "bg-emerald-50";
+                        const iconColorClass = isEven ? "text-[#0B453C]" : "text-emerald-700";
 
                         return (
                             <Link
@@ -109,7 +109,7 @@ export default function ShopByCategory() {
                                         <span className="text-xl font-bold relative z-10">{cat.name.charAt(0)}</span>
                                     )}
                                 </motion.div>
-                                <span className="text-sm font-bold text-gray-700 text-center whitespace-nowrap group-hover:text-[#CD3D1C] transition-colors">
+                                <span className="text-sm font-bold text-gray-700 text-center whitespace-nowrap group-hover:text-[#0B453C] transition-colors">
                                     {cat.name}
                                 </span>
                             </Link>

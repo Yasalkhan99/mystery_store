@@ -10,6 +10,8 @@ import TrustedPartners from "./components/TrustedPartners";
 import RecentNews from "./components/RecentNews";
 import Newsletter from "./components/Newsletter";
 import Testimonials from "./components/Testimonials";
+import FAQSection from "./components/FAQSection";
+import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
 import { getBannersWithLayout } from "@/lib/services/bannerService";
 
@@ -39,8 +41,12 @@ export default async function Home() {
       <TrustedPartners />
       {/* Recent News & Articles Section */}
       <RecentNews />
+      {/* FAQ Section */}
+      <FAQSection />
       {/* Testimonials Section */}
       <Testimonials />
+      {/* Contact Section */}
+      <ContactSection />
       {/* Newsletter Subscription Section */}
       <Newsletter />
       {/* Footer Section */}

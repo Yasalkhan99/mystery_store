@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getFavorites, removeFromFavorites, FavoriteCoupon } from '@/lib/services/favoritesService';
 import Navbar from '@/app/components/Navbar';
-import NewsletterSubscription from '@/app/components/NewsletterSubscription';
+import Newsletter from '@/app/components/Newsletter';
 import Footer from '@/app/components/Footer';
 
 export default function FavoritesPage() {
@@ -12,13 +12,13 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = 'My Favorites - AvailCoupon';
+    document.title = 'My Favorites - COUPACHU';
     loadFavorites();
-    
+
     // Listen for updates
     const handleUpdate = () => loadFavorites();
     window.addEventListener('favoritesUpdated', handleUpdate);
-    
+
     return () => {
       window.removeEventListener('favoritesUpdated', handleUpdate);
     };
@@ -42,13 +42,13 @@ export default function FavoritesPage() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden w-full">
       <Navbar />
-      
+
       {/* Favorites Section */}
       <div className="w-full px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16 bg-white overflow-x-hidden">
         <div className="max-w-7xl mx-auto w-full">
           <div className="mb-6 sm:mb-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-              My <span className="text-pink-600">Favorites</span>
+              My <span className="text-[#0B453C]">Favorites</span>
             </h1>
             <p className="text-gray-600 text-sm sm:text-base">
               {favorites.length} {favorites.length === 1 ? 'coupon' : 'coupons'} saved
@@ -68,7 +68,7 @@ export default function FavoritesPage() {
               <p className="text-gray-400 text-sm mb-6">Start adding coupons to your favorites!</p>
               <Link
                 href="/"
-                className="inline-block px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-pink-600 transition-all"
+                className="inline-block px-6 py-3 bg-gradient-to-r from-[#0B453C] to-emerald-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-[#0B453C] transition-all"
               >
                 Browse Coupons
               </Link>
@@ -78,7 +78,7 @@ export default function FavoritesPage() {
               {favorites.map((coupon) => (
                 <div
                   key={coupon.couponId}
-                  className="group bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all duration-300 relative"
+                  className="group bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:border-[#0B453C] hover:shadow-lg transition-all duration-300 relative"
                 >
                   <button
                     onClick={() => handleRemove(coupon.couponId)}
@@ -89,7 +89,7 @@ export default function FavoritesPage() {
                       <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                     </svg>
                   </button>
-                  
+
                   {coupon.logoUrl && (
                     <div className="mb-3 flex items-center justify-center h-16">
                       <img
@@ -103,9 +103,9 @@ export default function FavoritesPage() {
                       />
                     </div>
                   )}
-                  
+
                   <div className="text-center">
-                    <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                    <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-[#0B453C] transition-colors">
                       {coupon.code}
                     </h3>
                     {coupon.storeName && (
@@ -133,8 +133,8 @@ export default function FavoritesPage() {
           )}
         </div>
       </div>
-      
-      <NewsletterSubscription />
+
+      <Newsletter />
       <Footer />
     </div>
   );
